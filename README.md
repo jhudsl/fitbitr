@@ -1,4 +1,4 @@
-# Fitrbit
+# Fitbitr
 
 A small package containing some convenient wrappers for interacting with the fitbit api.
 
