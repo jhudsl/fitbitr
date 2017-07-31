@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "# Fitrbit\n\nA small package containing some convenient wrappers for interacting with the fitbit api.\n\nFunctions like `getHr` can retrieve a whole day's worth of second-resolution heartrate data.\n\nIn addition there is an html widget and accompanying shiny module for tagging activities over multiple day and returning those tags to R.\n\n",
+    "created" : 1501536479150.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2587772903",
+    "id" : "BABBF969",
+    "lastKnownWriteTime" : 1501536606,
+    "last_content_update" : 1501536606884,
+    "path" : "~/hopkins/fitbitr/README.md",
+    "project_path" : "README.md",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "markdown"
+}

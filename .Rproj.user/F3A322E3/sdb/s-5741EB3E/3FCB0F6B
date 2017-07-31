@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "#' A general interface to the activity intraday api. Not typically used directly but wrapped to create more specific functions like fitrbit::getHr.\n#' @param config An oauth config object setup with your token.\n#' @param type Which activity api you desire. Options are calories, steps, distance, floors, and elevation.\n#' @param date The day for which you want data. Defaults to the current day. Day format is yyyy-MM-dd.\n#' @param startTime HH:MM 24 hour time for when you want to start getting data. Defaults to midnight.\n#' @param endTime HH:MM 24 hour time for when you want to stop getting data. Defaults to 23:59.\n#' @param resolution Can choose between \"1min\" and \"15min\" although I'm not sure why you'd ever want 15 minute.\n#' @return A dataframe with two rows. time of the day in seconds and beats per minute for that timepoint.\n#' @export\n#' @examples\n#' # Get data on calories burned over time.\n#' query_result <- getActivity(\n#'   config,\n#'   type = 'calories',\n#'   date = date,\n#'   startTime = startTime,\n#'   endTime = endTime\n#' )\n#' @import httr jsonlite\ngetActivity <- function(\n  token,\n  type = 'steps',\n  date = 'today',\n  startTime = \"00:00\",\n  endTime = \"23:59\",\n  resolution = \"1min\"\n){\n  query_string <- sprintf(\"https://api.fitbit.com/1/user/-/activities/%s/date/%s/1d/%s/time/%s/%s.json\",\n                          type, date, resolution, startTime, endTime)\n\n  fitbitGet(query_string, token) %>%\n    httr::content(as=\"text\") %>%\n    jsonlite::fromJSON()\n}\n",
+    "created" : 1501533975848.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "963927378",
+    "id" : "3FCB0F6B",
+    "lastKnownWriteTime" : 1501535633,
+    "last_content_update" : 1501535633242,
+    "path" : "~/hopkins/fitbitr/R/getActivity.R",
+    "project_path" : "R/getActivity.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
