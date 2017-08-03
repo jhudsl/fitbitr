@@ -7,8 +7,6 @@ HTMLWidgets.widget({
   factory: function(el, width, height) {
 
     // TODO: define shared variables for this instance
-    console.log(el, width, height);
-
     return {
 
       renderValue: function(x) {
@@ -18,12 +16,11 @@ HTMLWidgets.widget({
 
         function tagsReceived(tags, colors) {
           if(HTMLWidgets.shinyMode) { // check to make sure we're in shiny.
-            console.log(tags);
             Shiny.onInputChange(el.id + "_tagData", JSON.stringify(tags));
           }
         };
 
-        d3.select(domTarget).style('margin', '0 auto');
+        d3.select(domTarget).style('margin', '0 auto').style('overflow', 'scroll');
 
         var fitbitPlot = fitbit_viz({
           data: data,
@@ -33,8 +30,7 @@ HTMLWidgets.widget({
         });
       },
       resize: function(width, height) {
-        // TODO: code to re-render the widget with a new size
-
+        // handled this inside the function already.
       }
 
     };

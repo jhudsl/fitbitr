@@ -2,13 +2,14 @@
 #' @param query_string The query string to be sent in. See given API docs for details.
 #' @param token_or_conf Can be either a string token (e.g. from shinyauth) or a config object (e.g. what you get from httr's normal oauth function).
 #' @return A nice big blob of whatever your get request returns.
+#' @export
 #' @examples
-#' queryResults <- fitbitGet(
+#' queryResult <- fitbitGet(
 #' query_string = 'https://api.fitbit.com/1/user/-/activities/heart/date/2017-07-31/1d/1min/time/00:00/23:59.json'
 #'   token_or_conf = fitrbit::makeConfig(api_keys)
 #'  )
 #' @import httr
-fitbitGet <- function(query_string,token_or_conf){
+fitbitGet <- function(query_string, token_or_conf){
 
   if(class(token_or_conf) == "character"){
     result <- httr::GET(query_string, httr::add_headers( Authorization = paste("Bearer", token_or_conf) ) )
@@ -16,6 +17,5 @@ fitbitGet <- function(query_string,token_or_conf){
      result <- httr::GET(query_string, config = token_or_conf)
   }
 
-  # Todo throw an informative error when we get a bad return status.
   return(result)
 }

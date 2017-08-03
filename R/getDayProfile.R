@@ -30,5 +30,5 @@ getDayProfile <- function(
         dplyr::mutate(type = "steps") %>%
         dplyr::rename(value = steps)
     ) %>%
-    dplyr::mutate(date = ifelse(date == "today", as.character(Sys.Date()), date))
+    dplyr::mutate(date = ifelse(as.character(date) == "today", as.character(Sys.Date()), date))
 }

@@ -27,8 +27,22 @@ getSteps <- function(
     endTime = endTime
   )
 
-  query_result$`activities-steps-intraday`$dataset %>%
-    dplyr::as_data_frame() %>%
-    dplyr::mutate(time = as.numeric(lubridate::hms(time))) %>%
-    dplyr::rename(steps = value)
+  timeSeries <- query_result$`activities-steps-intraday`$dataset
+
+  # If the query result is empty
+  if(length(timeSeries) == 0){
+    #Make an empty dataframe to return
+    parsedResult <- dplyr::data_frame(time = numeric(), steps = numeric())
+  } else {
+    parsedResult <- timeSeries %>%
+      dplyr::mutate(time = as.numeric(lubridate::hms(time))) %>%
+      dplyr::rename(steps = value)
+  }
+
+  # If you query the future in the api for steps, it just says 0, replace this with empty df.
+  if(max(parsedResult$steps) == 0) {
+    parsedResult <- dplyr::data_frame(time = numeric(), steps = numeric())
+  }
+
+  return(parsedResult)
 }

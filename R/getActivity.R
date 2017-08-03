@@ -25,10 +25,13 @@ getActivity <- function(
   endTime = "23:59",
   resolution = "1min"
 ){
-  query_string <- sprintf("https://api.fitbit.com/1/user/-/activities/%s/date/%s/1d/%s/time/%s/%s.json",
+  # Generate the relevant query string.
+  queryString <- sprintf("https://api.fitbit.com/1/user/-/activities/%s/date/%s/1d/%s/time/%s/%s.json",
                           type, date, resolution, startTime, endTime)
 
-  fitbitGet(query_string, token) %>%
-    httr::content(as="text") %>%
-    jsonlite::fromJSON()
+  # Grab raw query
+  queryResult <- fitbitGet(queryString, token)
+
+  # Parse query into R object
+  queryParse(queryResult)
 }

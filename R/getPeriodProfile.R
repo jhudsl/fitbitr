@@ -9,9 +9,9 @@ getPeriodProfile <- function(
   token,
   desired_days
 ){
+  print('running get periodProfile')
   # Initialize the first day
   days_data <- getDayProfile(token, date = desired_days[1])
-
   # loop through the rest of the days
   for(day in desired_days[-1]){
     days_data <- days_data %>%

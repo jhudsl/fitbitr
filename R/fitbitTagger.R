@@ -1,18 +1,19 @@
 #' Plots a series of fitbit time series charts with a tagger.
 #'
 #' @param id the id you will use to keep track of this component in your app
-#' @param ... additional tags to \code{\link{div}} to display before plot is
+#' @param width width of vizualization in css units of your choice. Defaults to filling container
+#' @param height height of vizualization in css units of your choice. Defaults to filling container
 #' displayed
 #' @return A large chart conataining as many days worth of data as was fed to it along with a tag interface.
 #' @export
 #' @examples
 #' fitbitTaggerUI('tagger')
 #' @import shiny
-fitbitTaggerUI <- function(id) {
+fitbitTaggerUI <- function(id, width = NULL, height = NULL) {
   # Create a namespace function using the provided id
   ns <- NS(id)
   #set up output
-  fitbitVizOutput(ns('tagviz'))
+  fitbitVizOutput(ns('tagviz'), width, height)
 }
 
 
