@@ -17,7 +17,7 @@ shinyGetToken <- function(auth_code, redirect_uri, key, token_url, key_secret_co
   queryBody <- sprintf("client_id=%s&grant_type=authorization_code&redirect_uri=%s&code=%s",
                        key, redirect_uri, auth_code)
 
-  httr::POST(
+  result <- httr::POST(
     encode = "form",
     url = token_url,
     httr::add_headers(Authorization = paste("Basic", key_secret_code),
@@ -26,5 +26,8 @@ shinyGetToken <- function(auth_code, redirect_uri, key, token_url, key_secret_co
   ) %>%
     httr::content(as="text") %>%
     jsonlite::fromJSON()
+
+  print(result)
+  return(result)
 }
 
