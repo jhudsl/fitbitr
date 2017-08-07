@@ -9,21 +9,22 @@
 #' my_config <- makeConfig(api_keys)
 makeConfig <- function(
   api_keys,
-  scope = c("activity", "heartrate", "sleep")
+  scope = c("activity", "heartrate", "sleep", "profile")
 ){
   fitbit_endpoint <- httr::oauth_endpoint( authorize = "https://www.fitbit.com/oauth2/authorize",
-                                     access = "https://api.fitbit.com/oauth2/token")
-  myapp <-  httr::oauth_app( appname = api_keys$appname,
-                      key     = api_keys$key,
-                      secret  = api_keys$secret)
+                                           access    = "https://api.fitbit.com/oauth2/token")
+
+  myapp <-  httr::oauth_app(appname = api_keys$appname,
+                            key     = api_keys$key,
+                            secret  = api_keys$secret)
 
   #What the heck, why do I need this?! Pull request will be sent
   Sys.setenv("HTTR_SERVER_PORT" = "1410")
 
-  token <-  httr::oauth2.0_token(fitbit_endpoint,
-                          myapp,
-                          use_basic_auth = TRUE,
-                          scope=scope)
+  token <-  httr::oauth2.0_token( fitbit_endpoint,
+                                  myapp,
+                                  use_basic_auth = TRUE,
+                                  scope=scope )
 
   config(token = token)
 }

@@ -5,7 +5,7 @@
 \title{Takes a list object with three strings: API credentials of your app's name, key, and secret. Returns a config object to be passed to other api helper functions.
     If it's the first time using the function a browser will open and ask you to authorize the app. After this a token should be stored so you wont need to.}
 \usage{
-makeConfig(api_keys, scope = c("activity", "heartrate", "sleep"))
+makeConfig(api_keys, scope = c("activity", "heartrate", "sleep", "profile"))
 }
 \arguments{
 \item{api_keys}{An list with three values: $appname = your apps name on the api dashboard, $key = apps key (7 chars), and $secret (more than 7 chars).}

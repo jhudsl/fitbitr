@@ -4,12 +4,12 @@
 #' @return A nice big blob of whatever your get request returns.
 #' @export
 #' @examples
-#' queryResult <- fitbitGet(
+#' queryResult <- queryApi(
 #' query_string = 'https://api.fitbit.com/1/user/-/activities/heart/date/2017-07-31/1d/1min/time/00:00/23:59.json'
 #'   token_or_conf = fitrbit::makeConfig(api_keys)
 #'  )
 #' @import httr
-fitbitGet <- function(query_string, token_or_conf){
+queryApi <- function(query_string, token_or_conf){
 
   if(class(token_or_conf) == "character"){
     result <- httr::GET(query_string, httr::add_headers( Authorization = paste("Bearer", token_or_conf) ) )
