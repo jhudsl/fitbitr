@@ -9,26 +9,19 @@ getDayProfile <- function(
   token,
   date = 'today'
 ){
-  # grab heartrate
-  heart_rate <- getHr(
-    token,
-    resolution = 'minutes', #we choose minutes because then it matches with steps.
-    date = date
-  )
-  # grab steps
-  steps <- getSteps(
-    token,
-    date = date
-  )
-
-  # assemble them to one big dataframe
-  heart_rate %>%
-    dplyr::mutate(type = "heart rate") %>%
-    dplyr::rename(value = heart_rate) %>%
-    dplyr::bind_rows(
-      steps %>%
-        dplyr::mutate(type = "steps") %>%
-        dplyr::rename(value = steps)
-    ) %>%
+  rbind(
+    getTimeSeries(  # grab heartrate
+      type = "heart",
+      token,
+      activityDetail = '1min', #we choose minutes because then it matches with steps.
+      date = date
+    ),
+    getTimeSeries( # grab steps
+      type = "steps",
+      token,
+      activityDetail = '1min',
+      date = date
+    )
+  ) %>%
     dplyr::mutate(date = ifelse(as.character(date) == "today", as.character(Sys.Date()), date))
 }

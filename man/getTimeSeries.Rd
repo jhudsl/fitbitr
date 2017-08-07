@@ -4,15 +4,15 @@
 \alias{getTimeSeries}
 \title{Queries fitbit api and returns a nice tidy dataframe of your time series for a given date and time range.}
 \usage{
-getTimeSeries(token, type = "heart", resolution = "1min", date = "today",
-  startTime = "00:00", endTime = "23:59")
+getTimeSeries(token, type = "heart", activityDetail = "1min",
+  date = "today", startTime = "00:00", endTime = "23:59")
 }
 \arguments{
 \item{token}{An oauth config object setup with your token.}
 
 \item{type}{string corresponding to the type of data you want. 'heart' returns heartrate, 'steps' steps etc. For full list of possible options see the fitbit api docs (https://dev.fitbit.com/docs/activity/#get-activity-intraday-time-series).}
 
-\item{resolution}{Can be set to whatever resolution you desoire for data as long as the fitbit api supports it. Currently that is '1sec' and '1min' for heart rate, or '1min' '15min' for other activities.}
+\item{activityDetail}{Can be set to whatever resolution you desire for data as long as the fitbit api supports it. Currently that is '1sec' and '1min' for heart rate, or '1min' '15min' for other activities.}
 
 \item{date}{The day for which you want data. Defaults to the current day. Day format is yyyy-MM-dd.}
 

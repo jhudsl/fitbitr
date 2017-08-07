@@ -2,7 +2,7 @@
 % Please edit documentation in R/getUserInfo.R
 \name{getUserInfo}
 \alias{getUserInfo}
-\title{Grabs the users info.}
+\title{Grabs the users info and returns a giant list of things to see. For the full list of things see (https://dev.fitbit.com/docs/user/). Each key is available as the corresponding key of the R return object.}
 \usage{
 getUserInfo(token)
 }
@@ -13,7 +13,7 @@ getUserInfo(token)
 A list with lots of info about the user.
 }
 \description{
-Grabs the users info.
+Grabs the users info and returns a giant list of things to see. For the full list of things see (https://dev.fitbit.com/docs/user/). Each key is available as the corresponding key of the R return object.
 }
 \examples{
 getUserInfo <- function(token)
