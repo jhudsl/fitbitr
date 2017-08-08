@@ -58,7 +58,7 @@ function authr(c){
 }
 
 //logic for returning to shiny goes here.
-const sendToShiny = function(id){
+var sendToShiny = function(id){
   var send_dest = id + "code";
   return function(code){
     console.log("sending message with code to shiny", send_dest, code);

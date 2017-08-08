@@ -11,12 +11,14 @@ getPeriodProfile <- function(
 ){
   # Initialize the first day
   days_data <- getDayProfile(token, date = desired_days[1])
+
   # loop through the rest of the days
   for(day in desired_days[-1]){
-    days_data <- days_data %>%
-      dplyr::bind_rows(
-        getDayProfile(token, date = day)
-      )
+    days_data <- rbind(
+      days_data,
+      getDayProfile(token, date = day)
+    )
   }
-  days_data
+  days_data %>%
+    dplyr::mutate(date = lubridate::ymd(date))
 }

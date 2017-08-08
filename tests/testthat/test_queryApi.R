@@ -8,27 +8,33 @@ conf <- readRDS(here("tests/testthat/fitbitToken.rds"))
 
 context("Basic Querying")
 
-queryResultsHr <- queryApi(
-  query_string = 'https://api.fitbit.com/1/user/-/activities/heart/date/2017-07-31/1d/1min/time/00:00/23:59.json',
-  token_or_conf = conf
- )
 
+test_that("We get something back for different queries", {
+  # Check token on first test.
+  queryResultsHr = tryCatch({
+    queryApi(
+      query_string = 'https://api.fitbit.com/1/user/-/activities/heart/date/2017-07-31/1d/1min/time/00:00/23:59.json',
+      token_or_conf = conf
+    )
+  }, error = function(e) {
+    skip("Token seems to be stale")
+  })
 
-queryResultsSteps <- queryApi(
-  query_string = 'https://api.fitbit.com/1/user/-/activities/steps/date/2017-07-31/1d/1min/time/00:00/23:59.json',
-  token_or_conf = conf
-)
+  queryResultsSteps <- queryApi(
+    query_string = 'https://api.fitbit.com/1/user/-/activities/steps/date/2017-07-31/1d/1min/time/00:00/23:59.json',
+    token_or_conf = conf
+  )
 
-queryResultUser <- queryApi(
-  query_string = 'https://api.fitbit.com/1/user/-/profile.json',
-  token_or_conf = conf
-)
+  queryResultUser <- queryApi(
+    query_string = 'https://api.fitbit.com/1/user/-/profile.json',
+    token_or_conf = conf
+  )
 
-
-test_that("We get something back at for HR", {
   expect_false(is.null(queryResultsHr))
-})
-
-test_that("We get something back at all for steps", {
   expect_false(is.null(queryResultsSteps))
 })
+
+
+# Code to refresh token
+# token <- makeConfig(api_keys)
+# saveRDS(token, here("tests/testthat/fitbitToken.rds"))

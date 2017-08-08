@@ -25,5 +25,11 @@ extractIntraday <- function(parsedQuery){
   }
 
   # Extract the data from the list and add a type column so we have that info.
-  return(dplyr::mutate(parsedQuery[[intradayField]]$dataset, type = type))
+  return(
+    parsedQuery[[intradayField]]$dataset %>%
+      dplyr::mutate(
+        type = type,
+        time = as.numeric(lubridate::hms(time))
+      )
+    )
 }
