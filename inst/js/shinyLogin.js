@@ -52,7 +52,7 @@ function authr(c){
     onCodeReceive(code);
     clearURLOptions(); //hide ugly url.
   } else {
-    buttonText(dom_target, "Log In");
+    buttonText(dom_target, "Login");
     document.getElementById(dom_target).onclick = function() {page.go_to(apiQuery);};
   }
 }
