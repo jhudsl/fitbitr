@@ -14,7 +14,7 @@ queryApi <- function(query_string, token_or_conf){
   if(class(token_or_conf) == "character"){
     result <- httr::GET(query_string, httr::add_headers( Authorization = paste("Bearer", token_or_conf) ) )
   } else {
-     result <- httr::GET(query_string, config = token_or_conf)
+    result <- httr::GET(query_string, config = token_or_conf)
   }
 
   return(result)

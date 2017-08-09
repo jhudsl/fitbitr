@@ -39,7 +39,9 @@ shinyLogin <- function(input, output, session,
   key_secret_code <- .to_base_64(paste0(api_info$key, ":", api_info$secret))
 
   #Send over a message to javascript telling it to initialize the login button process.
-  observe({ session$sendCustomMessage(
+  # observe({
+  # })
+  session$sendCustomMessage(
     type = "initialize_button",
     message = list(
       dom_target = session$ns("authButton"),
@@ -48,11 +50,13 @@ shinyLogin <- function(input, output, session,
       scope = api_info$scope,
       response_type = response_type,
       id  = session$ns(""))
-    )
-  })
+  )
 
   # The user's api token in string format, when we get back a result from 'input$code' grab token using httr and return
   result <- reactive({
+    print(input$code)
+    req(input$code) #only attempt to get a token when we actually have a code to get it with.
+    print("running get shiny token!")
     token_request <- shinyGetToken(
       auth_code = input$code ,
       redirect_uri = api_info$redirect_uri,
