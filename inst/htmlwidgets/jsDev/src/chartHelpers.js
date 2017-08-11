@@ -34,7 +34,7 @@ const setUpSVG = (config) => {
   };
 };
 
-const drawAxes = ({svg, scales, height, margins, fontFamily}) => {
+const drawAxes = ({svg, scales, height}) => {
   // Add the axes holders
   const xAxis = svg.append('g').attr('class', 'x_axis');
   const yAxis = svg.append('g').attr('class', 'y_axis');
@@ -42,8 +42,7 @@ const drawAxes = ({svg, scales, height, margins, fontFamily}) => {
   const update = ({scales, height}) => {
     xAxis
       .attr('transform', 'translate(0,0)')
-      .attr('transform', 'translate(0,' +
-        (height - margins.top - margins.bottom) + ')')
+      .attr('transform', `translate(0,${height})`)
       .call(d3.axisBottom(scales.x).tickFormat(timeFormat));
 
     yAxis.call(d3.axisLeft(scales.y).ticks(5));
@@ -52,8 +51,8 @@ const drawAxes = ({svg, scales, height, margins, fontFamily}) => {
   // run update axis once to initialize:
   update({scales, height});
 
-  // givem a better font
-  svg.selectAll('.tick text').attr('font-family', fontFamily);
+  // // givem a better font
+  // svg.selectAll('.tick text').attr('font-family', fontFamily);
 
   return {
     update,
@@ -70,30 +69,6 @@ const makeArea = (scales) =>
     .x((d) => scales.x(d.x))
     .y((d) => scales.y(0))
     .y1((d) => scales.y(d.y));
-
-const writeDate = ({date, margins, width, height, svg, fontFamily}) => {
-  const dateLabel = svg
-    .append('g')
-    .attr('class', 'current_date')
-    .append('text')
-    .attr('text-anchor', 'middle')
-    .attr('font-family', fontFamily)
-    .attr('font-size', 20)
-    .text(toMonthDay(date));
-
-  // moves the date upon resize.
-  const update = ({width, height}) =>
-    dateLabel.attr(
-      'transform',
-      'translate(' + (width - margins.right*1.2) +
-        ',' + ((height - margins.top) / 2) + ') rotate(90)'
-    );
-
-  // initialize into correct position.
-  update({width, height});
-
-  return {update};
-};
 
 // The default -s in the dates cant be used as ids in html.
 const dateToId = (date) => `date_${date.replace(/-/g, '_')}`;

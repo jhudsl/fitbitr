@@ -49,12 +49,12 @@
   
   d3.csv("fitbit_data.csv", (err, data) => {
 
-    const fitbitPlot = new fitbit_viz({
-      data,
-      domTarget: '#viz',
-      width,
-      tagMessage: (tags, colors) => console.log('new tags', tags, colors),
+    const fitbitPlot = fitbit_viz({
+      targetId: 'viz',
+      width
     });
+
+    fitbitPlot.addData(data, [])
   })
 
 </script>

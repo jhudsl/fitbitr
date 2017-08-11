@@ -1,12 +1,14 @@
 const {subsetData} = require('./dataHelpers');
+const {curry} = require('ramda');
 
 const {
   setUpSVG,
   drawAxes,
   makeLine,
   makeArea,
-  writeDate,
 } = require('./chartHelpers');
+
+const writeDate = require('./writeDate');
 
 const Tagger = require('./Tagger/Tagger');
 const TagViz = require('./TagViz');
@@ -23,13 +25,16 @@ const TagViz = require('./TagViz');
  * @param {String} [stepsColor = '#66c2a5'] - Hex code for steps bar color.
  * @param {String} [fontFamily = 'avenir'] - Valid css name for a font for axes. 
 */
-const SingleDay = (config) => {
+
+// Chart is meant to be setup once using SingleDay(config);
+// then afterwards it gets eventually passed a set of day data in the form {date, data: []}
+// Along with this a d3 selector of an svg g container already set to margin conventions is provided. 
+const SingleDay = curry(
+  (config, selection) => {
+  
   const {
-    data,
-    date,
     scales,
     margins,
-    sel,
     onTag,
     onTagDelete,
     height,
@@ -40,77 +45,63 @@ const SingleDay = (config) => {
     fontFamily = 'avenir',
   } = config;
 
-  const hrData = subsetData({data, type: 'heart rate'});
-  const stepsData = subsetData({data, type: 'steps'});
-  const vizWidth = width - margins.left - margins.right;
-  const vizHeight = height - margins.top - margins.bottom;
-  const {svg, resizeSvg} = setUpSVG({sel, height, width, margins});
-  const hrG = svg.append('g').attr('class', 'hr_plot');
-  const stepsG = svg.append('g').attr('class', 'steps_plot');
-  const axes = drawAxes({svg, scales, height, margins, fontFamily});
-  const dateLabel = writeDate({date, margins, width, height, svg, fontFamily});
+  
+  // array to hold tag data. 
+  const daysTags = [];
 
-  let daysTags = [];
+  // const drawHeartRate = (line) => {
+  //   // grab the correct g element
+  //   const hrLine = hrG.selectAll('path').data([hrData]);
 
-  const drawHeartRate = (line) => {
-    // grab the correct g element
-    const hrLine = hrG.selectAll('path').data([hrData]);
+  //   // Update existing line
+  //   hrLine.attr('d', line);
 
-    // Update existing line
-    hrLine.attr('d', line);
+  //   // ENTER new line
+  //   hrLine
+  //     .enter()
+  //     .append('path')
+  //     .attr('d', line)
+  //     .style('stroke', hrColor)
+  //     .style('stroke-width', lineThickness)
+  //     .style('fill', 'none');
+  // };
 
-    // ENTER new line
-    hrLine
-      .enter()
-      .append('path')
-      .attr('d', line)
-      .style('stroke', hrColor)
-      .style('stroke-width', lineThickness)
-      .style('fill', 'none');
-  };
+  // const drawSteps = (area) => {
+  //   const stepLine = stepsG.selectAll('path').data([stepsData]);
 
-  const drawSteps = (area) => {
-    const stepLine = stepsG.selectAll('path').data([stepsData]);
+  //   // Update existing line
+  //   stepLine.attr('d', area);
 
-    // Update existing line
-    stepLine.attr('d', area);
-
-    // ENTER new line
-    stepLine
-      .enter()
-      .append('path')
-      .attr('d', area)
-      .style('fill', stepsColor)
-      .style('fill-opacity', 0.5);
-  };
+  //   // ENTER new line
+  //   stepLine
+  //     .enter()
+  //     .append('path')
+  //     .attr('d', area)
+  //     .style('fill', stepsColor)
+  //     .style('fill-opacity', 0.5);
+  // };
 
   // set up a tagging system for this day
-  const tagger = Tagger({
-    svg,
-    sel,
-    date,
-    width: vizWidth,
-    height: vizHeight,
-    scales,
-    onTag,
-    fontFamily,
-  });
+  // const tagger = Tagger({
+  //   svg,
+  //   sel,
+  //   date,
+  //   width: vizWidth,
+  //   height: vizHeight,
+  //   scales,
+  //   onTag,
+  //   fontFamily,
+  // });
 
-  // Now the tag visualization
-  const tagViz = TagViz({
-    svg,
-    scales,
-    height: vizHeight,
-    onTagDelete,
-  });
+  // // Now the tag visualization
+  // const tagViz = TagViz({
+  //   svg,
+  //   scales,
+  //   height: vizHeight,
+  //   onTagDelete,
+  // });
 
-  /** Gets new tags and visualizes them */
-  const updateTags = ({tags, lastTag}) => {
-    // filter tags to this day
-    daysTags = tags.filter((tag) => tag.date === date);
-    tagViz.draw(daysTags);
-    tagger.changePlaceHolder(lastTag);
-  };
+  
 
   const resize = ({width, height}) => {
     // update svg
@@ -131,10 +122,93 @@ const SingleDay = (config) => {
   // Kick off viz.
   resize({width, height});
 
+  // this will get called every time the function updates, so resize events should
+  // be handled automatically. The question is if the setup functions from earlier fall
+  // through or we need to figure out how to redo those as well. 
+
+  selection.each(function(selData, index) {
+    const svg = this;
+    
+    // g containers for the different metrics
+    const hrG = svg.append('g').attr('class', 'hr_plot');
+    const stepsG = svg.append('g').attr('class', 'steps_plot');
+   
+    // parse data. 
+    const {date, data} = selData;
+    const hrData = subsetData({data, type: 'heart rate'});
+    const stepsData = subsetData({data, type: 'steps'});
+
+    const axes = drawAxes({svg, scales, height, margins});
+
+    const dateLabel = writeDate({date, margins, width, height, svg});
+
+    //// Draw heart rate line
+    // grab the correct g element
+    const hrLine = hrG.selectAll('path').data([hrData]);
+
+    // Update existing line
+    hrLine.attr('d', line);
+
+    // ENTER new line
+    hrLine
+      .enter()
+      .append('path')
+      .attr('d', line)
+      .style('stroke', hrColor)
+      .style('stroke-width', lineThickness)
+      .style('fill', 'none');
+
+    //// Draw steps line
+    const stepLine = stepsG.selectAll('path').data([stepsData]);
+
+    // Update existing line
+    stepLine.attr('d', area);
+
+    // ENTER new line
+    stepLine
+      .enter()
+      .append('path')
+      .attr('d', area)
+      .style('fill', stepsColor)
+      .style('fill-opacity', 0.5);
+
+
+    // set up a tagging system for this day
+  // const tagger = Tagger({
+  //   svg,
+  //   sel,
+  //   date,
+  //   width: vizWidth,
+  //   height: vizHeight,
+  //   scales,
+  //   onTag,
+  //   fontFamily,
+  // });
+
+  // // Now the tag visualization
+  // const tagViz = TagViz({
+  //   svg,
+  //   scales,
+  //   height: vizHeight,
+  //   onTagDelete,
+  // });
+
+  //     /** Gets new tags and visualizes them */
+  // const updateTags = ({tags, lastTag}) => {
+  //   // filter tags to this day
+  //   daysTags = tags.filter((tag) => tag.date === date);
+  //   tagViz.draw(daysTags);
+  //   tagger.changePlaceHolder(lastTag);
+  // };
+
+
+  });
+    
+
   return {
     resize,
     updateTags,
   };
-};
+});
 
 module.exports = SingleDay;

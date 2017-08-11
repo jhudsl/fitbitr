@@ -22,20 +22,54 @@ const VisualizeDays = (config) => {
   } = config;
 
   const sel = d3.select('#' + targetId);
-  
+
   // generate a common set of scales for all the days.
   const scalesGen = makeScales(margins);
   const scales = scalesGen({dayHeight, width});
-  const groupOnDate = groupByKey('date');
-  console.log(sel, scales, groupOnDate);
 
-  // let dayPlots;
+  // function that can take raw data and group it in an object keyed by date.
+  const groupOnDate = groupByKey('date');
+
+  const seeInside = (selection) =>
+    selection.each(function(d, i) {
+      console.log(d);
+      console.log(this);
+      // generate chart here; `d` is the data and `this` is the element
+    });
+
+  const addData = (dayData, tags = []) => {
+    const groupedData = groupOnDate(dayData);
+
+    // DATA JOIN
+    // Join new data with old elements, if any.
+    const dayDivs = sel.selectAll('.dayPlotDiv').data(groupedData, (d) => d.date);
+
+    // UPDATE
+    // Update old elements as needed.
+    // dayDivs
+
+    // ENTER
+    dayDivs
+      .enter()
+      .append('svg')
+      .attr('class', 'dayPlotDiv')
+      .attr('id', (d) => d.date)
+      .attr('width', width)
+      .attr('height', dayHeight)
+      .append('g')
+      .attr('transform', `translate(${margins.left}, ${margins.top})`)
+      .call(seeInside);
+
+    // EXIT
+    dayDivs.exit().remove();
+  };
+
+  return {addData};
+
   // // stores all the users tags [{tag, date, start, end}, ...]
   // let tags = [];
   // // Object to relate a tag to a color for plotting.
   // let tagColors = {};
-
-  
 
   // // append the tag legend
   // const tagLegend = TagLegend({
@@ -109,8 +143,6 @@ const VisualizeDays = (config) => {
   //   dayPlots.forEach((day) =>
   //     day.resize({width: getContainerWidth(), height: dayHeight})
   //   );
-
-  
 
   // window.addEventListener('resize', () => {
   //   resize();
