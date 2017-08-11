@@ -34,36 +34,6 @@ const setUpSVG = (config) => {
   };
 };
 
-// returns a scale for x y and to convert to seconds from screen position
-// as well as returning a function for recomputing the size dependent components.
-const makeScales = ({yMax, height, width, margins}) => {
-  // Set up static parts of the scales.
-  let x = d3.scaleTime().domain([secondsToTime(0), secondsToTime(86400)]);
-  let y = d3.scaleLinear().domain([0, yMax]);
-  let toSeconds = d3.scaleLinear().range([0, 86400]);
-
-  const resizeScales = ({width, height}) => {
-    const chartWidth = width - margins.left - margins.right;
-    const chartHeight = height - margins.top - margins.bottom;
-
-    // Based on the supplied sizes,
-    // assign the range to x and y and domain to seconds
-    x.range([0, chartWidth]);
-    y.range([chartHeight, 0]);
-    toSeconds.domain([0, chartWidth]);
-  };
-
-  // Size scales for initial use.
-  resizeScales({width, height});
-
-  return {
-    x,
-    y,
-    toSeconds,
-    resizeScales,
-  };
-};
-
 const drawAxes = ({svg, scales, height, margins, fontFamily}) => {
   // Add the axes holders
   const xAxis = svg.append('g').attr('class', 'x_axis');

@@ -1,3 +1,4 @@
+const d3 = require('d3');
 const moment = require('moment');
 
 const secondsToTime = (secs) => moment().startOf('day').seconds(secs);

@@ -7,14 +7,16 @@
     "serve": "cd docs/; python -m SimpleHTTPServer 8000",
     "start": "watchify src/main.js src/main.js -t [ babelify --presets [ es2015 ] ] --standalone fitbit_viz -o docs/fitbit_viz.js -v --debug",
     "build": "browserify src/main.js -t [ babelify --presets [ es2015 ] ] --standalone fitbit_viz > fitbitViewer/inst/htmlwidgets/lib/fitbit_viz/fitbit_viz.js",
-    "buildMin": "browserify src/main.js -t [ babelify --presets [ es2015 ] ] --standalone fitbit_viz | uglifyjs -cm > dist/fitbit_viz.min.js"
+    "buildMin": "browserify src/main.js -t [ babelify --presets [ es2015 ] ] --standalone fitbit_viz | uglifyjs -cm > dist/fitbit_viz.min.js",
+    "test": "browserify -t [ babelify --presets [ es2015 ] ] src/*.test.js | tape-run | tap-spec"
   },
   "author": "Nick Strayer <nick.strayer@gmail.com> (http://nickstrayer.me)",
   "license": "MIT",
   "dependencies": {
     "colorbrewer": "1.0.0",
-    "d3": "^4.9.1",
-    "moment": "2.18.1"
+    "d3": "4.10.0",
+    "moment": "2.18.1",
+    "ramda": "0.24.1"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.24.1",
@@ -24,10 +26,5 @@
     "eslint-config-google": "0.9.1",
     "prettier-eslint": "6.4.2",
     "watchify": "^3.9.0"
-  },
-  "browserify": {
-    "transform": [
-      "babelify"
-    ]
   }
 }

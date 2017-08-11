@@ -18,7 +18,7 @@ HTMLWidgets.widget({
           if(HTMLWidgets.shinyMode) { // check to make sure we're in shiny.
             Shiny.onInputChange(el.id + "_tagData", JSON.stringify(tags));
           }
-        };
+        }
 
         d3.select(domTarget).style('margin', '0 auto').style('overflow', 'scroll');
 
@@ -28,6 +28,9 @@ HTMLWidgets.widget({
           width: width,
           tagMessage: tagsReceived
         });
+
+        // Bind the tagger to the parent element so we can access it later.
+        document.getElementById(el.id).fitbitPlot = fitbitPlot;
       },
       resize: function(width, height) {
         // handled this inside the function already.
@@ -36,3 +39,17 @@ HTMLWidgets.widget({
     };
   }
 });
+
+
+// Logic for updating widget with new data
+
+if (HTMLWidgets.shinyMode) {
+  Shiny.addCustomMessageHandler("taggerVizNewData", function(message) {
+    console.log("tryna update the data", message);
+
+    var el = document.getElementById(message.id);
+    if (el) {
+      el.fitbitPlot.update(message.start, message.end, message.options);
+    }
+  });
+}

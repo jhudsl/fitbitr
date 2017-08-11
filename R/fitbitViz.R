@@ -28,6 +28,12 @@ fitbitViz <- function(data, width = NULL, height = NULL, elementId = NULL) {
   )
 }
 
+taggerAddData <- function(id, newRawData, newTags){
+  message <- list(id = id, data = newRawData, tags = newTags)
+  session <- shiny::getDefaultReactiveDomain()
+  session$sendCustomMessage("taggerVizNewData", message)
+}
+
 #' Shiny bindings for fitbitViz
 #'
 #' Output and render functions for using fitbitViz within Shiny
