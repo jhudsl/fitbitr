@@ -2,7 +2,14 @@ const {trans} = require('./chartHelpers');
 
 /** Creates a legend that updates with the currently present tags.*/
 const TagLegend = (config) => {
-  const {el, tagColors, tags, onHighlight, fontFamily} = config;
+  const {sel, tagColors, tags, onHighlight, fontFamily} = config;
+
+  const el = sel
+    .append('div')
+    .style('position', 'relative')
+    .attr('id', 'tagLegend')
+    .html('');
+
   // Header
   el
     .style('font-family', fontFamily)

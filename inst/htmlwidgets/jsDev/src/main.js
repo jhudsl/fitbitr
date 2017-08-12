@@ -41,8 +41,9 @@ const VisualizeDays = (config) => {
   });
 
   // append the tag legend
+  
   const tagLegend = TagLegend({
-    el: makeDiv({sel, id: 'tag_legend'}),
+    sel,
     tagColors,
     tags,
     fontFamily,
@@ -105,6 +106,8 @@ const VisualizeDays = (config) => {
 
     const uniqueDays = Object.keys(groupedData);
 
+    // empty holder for dayplots. 
+    dayPlots = [];
     // DATA JOIN
     const dayDivs = sel.selectAll('.day_viz').data(uniqueDays, (d)=> d);
 
@@ -115,26 +118,27 @@ const VisualizeDays = (config) => {
       .style('position', 'relative')
       .attr('class', 'day_viz')
       .attr('id', (d) => dateToId(d))
-      .html('');
+      .html('')
+      .each((date) => {
+        console.log(date);
+        dayPlots.push(
+          SingleDay({
+            data: groupedData[date],
+            date,
+            scales,
+            margins: dayMargins,
+            height: dayHeight,
+            width: getContainerWidth(),
+            sel: makeDiv({sel, id: date}),
+            onTag,
+            onTagDelete,
+            fontFamily,
+          })
+        );
+      });
 
     // Remove days no longer present
     dayDivs.exit().remove();
-
-    // scan over dates and initialize a new visualization for each day.
-    dayPlots = Object.keys(groupedData).map((date) =>
-      SingleDay({
-        data: groupedData[date],
-        date,
-        scales,
-        margins: dayMargins,
-        height: dayHeight,
-        width: getContainerWidth(),
-        sel: makeDiv({sel, id: date}),
-        onTag,
-        onTagDelete,
-        fontFamily,
-      })
-    );
   };
 
   // kick it off
