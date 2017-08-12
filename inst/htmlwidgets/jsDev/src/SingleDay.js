@@ -1,6 +1,8 @@
 const {subsetData} = require('./dataHelpers');
 const {curry} = require('ramda');
 
+const setUpBrush = require('./chartFunctions/setUpBrush');
+
 const drawAxes = require('./drawAxes');
 const writeDate = require('./writeDate');
 const {makeLine, makeArea} = require('./shapeGenerators');
@@ -27,22 +29,21 @@ const TagViz = require('./TagViz');
 // Along with this a d3 selector of an svg g container already set to margin conventions is provided.
 const SingleDay = curry((config, selection) => {
   const {
-    scales,
-    margins,
-    onTag,
-    onTagDelete,
     height,
     width,
+    margins,
+    scales,
+    onTag,
+    onTagDelete,
     lineThickness = 1,
     hrColor = '#8da0cb',
     stepsColor = '#66c2a5',
-    fontFamily = 'avenir',
   } = config;
 
-  // array to hold tag data.
+  // array to hold tag the day's tag data.
   const daysTags = [];
+  let tagRange = [0, 0];
 
- 
   // const resize = ({width, height}) => {
   //   // update svg
   //   resizeSvg({width, height});
@@ -78,6 +79,32 @@ const SingleDay = curry((config, selection) => {
     writeDate({date, width, height, svg});
     drawHeartRate({svg, scales, hrData, hrColor, lineThickness});
     drawSteps({svg, scales, stepsData, stepsColor});
+
+    // configure brush and append a container for the brush and call the brush function on it.
+    // const tagBrush = setUpBrush({width, height, scales, );
+    //
+
+
+    function brushEvent() {
+      try {
+        const s = d3.event.selection;
+        const timeRange = s.map((t) => scales.toSeconds(t));
+        // set the global tag range to the value we currently have. 
+        tagRange = timeRange;
+      } catch (err) {
+        // When the user has just clicked elsewhere.
+        onClickOff();
+        console.log(err);
+      }
+    }
+
+    // set up brushing function.
+    const tagBrush = d3
+      .brushX()
+      .extent([[0, 0], [width, height]])
+      .on('brush end', brushEvent);
+
+    svg.append('g').attr('class', 'tag_brush').call(tagBrush);
 
     // set up a tagging system for this day
     // const tagger = Tagger({

@@ -18,10 +18,6 @@ const drawAxes = ({svg, scales, height}) => {
   // run update axis once to initialize:
   update({scales, height});
 
-  console.log('height given to draw axes is', height)
-  // // givem a better font
-  // svg.selectAll('.tick text').attr('font-family', fontFamily);
-
   return {
     update,
   };

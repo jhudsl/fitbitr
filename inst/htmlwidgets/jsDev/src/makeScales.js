@@ -1,5 +1,5 @@
 const d3 = require('d3');
-const {secondsToTime} = require('./timeHelpers');
+const secondsToTime = require('./timeFunctions/secondsToTime');
 const {curry} = require('ramda');
 
 // returns an object with scales for x y and to convert to seconds from screen position

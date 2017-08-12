@@ -1,8 +1,6 @@
 const d3 = require('d3');
 
-const {
-  secondsToTime,
-} = require('./timeHelpers');
+const secondsToTime = require('./timeFunctions/secondsToTime');
 
 const subsetData = ({data, type, xVal = 'time', yVal = 'value'}) =>
   data.filter((d) => d.type == type).map((d) => ({

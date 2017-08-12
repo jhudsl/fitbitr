@@ -1,7 +1,6 @@
 const d3 = require('d3');
 const moment = require('moment');
 
-const secondsToTime = (secs) => moment().startOf('day').seconds(secs);
 
 const timeFormat = d3.timeFormat('%I %p');
 
@@ -18,7 +17,6 @@ const getTimeOfDay = (secs) => {
 
 
 module.exports = {
-  secondsToTime,
   timeFormat,
   toMonthDay,
   getTimeOfDay,
