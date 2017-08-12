@@ -13,5 +13,4 @@ const subsetData = ({data, type, xVal = 'time', yVal = 'value'}) =>
 
 module.exports = {
   subsetData,
-  groupByDate,
 };

@@ -1,4 +1,4 @@
-// const SingleDay = require('./SingleDay');
+const SingleDay = require('./SingleDay');
 // const TagLegend = require('./TagLegend');
 const groupByKey = require('./groupByKey');
 // const {makeDiv} = require('./chartHelpers');
@@ -22,23 +22,30 @@ const VisualizeDays = (config) => {
   } = config;
 
   const sel = d3.select('#' + targetId);
-
+  
   // generate a common set of scales for all the days.
   const scalesGen = makeScales(margins);
   const scales = scalesGen({dayHeight, width});
 
+  // set chart height and width
+  const ch = dayHeight - margins.top - margins.bottom;
+  const cw = width - margins.left - margins.right;
+  
   // function that can take raw data and group it in an object keyed by date.
   const groupOnDate = groupByKey('date');
 
-  const seeInside = (selection) =>
-    selection.each(function(d, i) {
-      console.log(d);
-      console.log(this);
-      // generate chart here; `d` is the data and `this` is the element
-    });
-
   const addData = (dayData, tags = []) => {
     const groupedData = groupOnDate(dayData);
+
+    // Set up individual day charts function
+    const dayChart = SingleDay({
+        scales,
+        margins,
+        // onTag,
+        // onTagDelete,
+        height: ch,
+        width: cw,
+    });
 
     // DATA JOIN
     // Join new data with old elements, if any.
@@ -58,7 +65,7 @@ const VisualizeDays = (config) => {
       .attr('height', dayHeight)
       .append('g')
       .attr('transform', `translate(${margins.left}, ${margins.top})`)
-      .call(seeInside);
+      .call(dayChart);
 
     // EXIT
     dayDivs.exit().remove();

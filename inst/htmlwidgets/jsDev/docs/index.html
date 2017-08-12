@@ -45,7 +45,7 @@
 
 <script>
 
-  const width = window.innerWidth;
+  const width = document.getElementById('container').offsetWidth;
   
   d3.csv("fitbit_data.csv", (err, data) => {
 
