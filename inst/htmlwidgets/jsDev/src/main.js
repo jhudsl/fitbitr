@@ -1,10 +1,10 @@
 const SingleDay = require('./SingleDay');
 const TagLegend = require('./TagLegend');
 const {groupByDate} = require('./dataHelpers');
-const {makeDiv, makeScales} = require('./chartHelpers');
+const {makeScales} = require('./chartHelpers');
+const makeDiv = require('./chartFunctions/makeDiv');
 const {Set1: colors} = require('colorbrewer');
-
-
+const dateToId = require('./chartFunctions/dateToId');
 
 /* Takes multiple day's worth of data and spins out a day viz for each along with
 *  some tagging logic to go with it.
@@ -20,13 +20,15 @@ const VisualizeDays = (config) => {
     tagMessage,
   } = config;
   const getContainerWidth = () => sel._groups[0][0].offsetWidth;
-  const groupedData = groupByDate(data);
+
   const sel = d3.select(domTarget);
   const colorScale = colors[9];
 
   let dayPlots;
+
   // stores all the users tags [{tag, date, start, end}, ...]
   let tags = [];
+
   // Object to relate a tag to a color for plotting.
   let tagColors = {};
 
@@ -56,7 +58,7 @@ const VisualizeDays = (config) => {
     // send new tag info up to shiny or wherever calling this function.
     tagMessage(tags, tagColors);
   };
-  
+
   // behavior once a tag is made.
   const onTag = (tag) => {
     const tagName = tag.tag;
@@ -88,10 +90,39 @@ const VisualizeDays = (config) => {
     sendTags();
   };
 
-  // scan over dates and initialize a new visualization for each day.
-  dayPlots = Object.keys(groupedData).map(
-    (date) =>
-      new SingleDay({
+  const resize = () =>
+    dayPlots.forEach((day) =>
+      day.resize({width: getContainerWidth(), height: dayHeight})
+    );
+
+  window.addEventListener('resize', () => {
+    resize();
+  });
+
+  // behavior when we get new data from the server.
+  const newData = (data, tags) => {
+    const groupedData = groupByDate(data);
+
+    const uniqueDays = Object.keys(groupedData);
+
+    // DATA JOIN
+    const dayDivs = sel.selectAll('.day_viz').data(uniqueDays, (d)=> d);
+
+    // Enter new days
+    dayDivs
+      .enter()
+      .append('div')
+      .style('position', 'relative')
+      .attr('class', 'day_viz')
+      .attr('id', (d) => dateToId(d))
+      .html('');
+
+    // Remove days no longer present
+    dayDivs.exit().remove();
+
+    // scan over dates and initialize a new visualization for each day.
+    dayPlots = Object.keys(groupedData).map((date) =>
+      SingleDay({
         data: groupedData[date],
         date,
         scales,
@@ -103,19 +134,15 @@ const VisualizeDays = (config) => {
         onTagDelete,
         fontFamily,
       })
-  );
-
-  const resize = () =>
-    dayPlots.forEach((day) =>
-      day.resize({width: getContainerWidth(), height: dayHeight})
     );
+  };
 
-  window.addEventListener('resize', () => {
-    resize();
-  });
+  // kick it off
+  newData(data, tags);
 
   return {
     resize,
+    newData,
   };
 };
 

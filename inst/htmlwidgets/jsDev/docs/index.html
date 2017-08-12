@@ -1,38 +1,39 @@
 <!DOCTYPE html>
 <meta charset='utf-8'>
-<script
-  src="https://code.jquery.com/jquery-3.2.1.min.js"
-  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
   crossorigin="anonymous"></script>
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+  crossorigin="anonymous">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+  crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.9.1/d3.min.js"></script>
 <script src='fitbit_viz.js'></script>
 
-<div id = 'container'>
+<div id='container'>
   <div>
     <h1> Fitbit Data! </h1>
     <p>
-      The following are sample plots for fitbit minute-resolution data. There are my own data for the dates shown on each plot. 
-      To preview the activity tagging interface simply drag a region on a chart. Eventually a tag input will be placed at the top, allowing the user to tag an activity over as many days as possible and then submit all at once. 
+      The following are sample plots for fitbit minute-resolution data. There are my own data for the dates shown on each plot.
+      To preview the activity tagging interface simply drag a region on a chart. Eventually a tag input will be placed at
+      the top, allowing the user to tag an activity over as many days as possible and then submit all at once.
     </p>
   </div>
   <hr/>
-  <div id = "viz"> </div>
+  <div id="viz"> </div>
 </div>
 
 
 <style>
-  svg{
-  	overflow: visible;
+  svg {
+    overflow: visible;
   }
 
-  body{
+  body {
     font-family: avenir;
     margin: 15px;
   }
 
-  .axis{
+  .axis {
     opacity: .5;
   }
 
@@ -40,21 +41,28 @@
     max-width: 1000px;
     margin: 0 auto;
   }
-
 </style>
 
 <script>
-
   const width = window.innerWidth;
-  
+
   d3.csv("fitbit_data.csv", (err, data) => {
+    const firstData = data.filter(d => ["2017-06-23", "2017-06-24", "2017-06-25"].includes(d.date))
+    const secondData = data.filter(d => !(["2017-06-23", "2017-06-24", "2017-06-25"].includes(d.date)))
 
     const fitbitPlot = new fitbit_viz({
-      data,
+      data: firstData,
       domTarget: '#viz',
       width,
       tagMessage: (tags, colors) => console.log('new tags', tags, colors),
     });
+
+    window.setTimeout(
+      function () {
+        fitbitPlot.newData(secondData,[])
+      }, 3000
+    );
+
   })
 
 </script>

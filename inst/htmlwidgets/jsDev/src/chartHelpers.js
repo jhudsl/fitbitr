@@ -125,18 +125,7 @@ const writeDate = ({date, margins, width, height, svg, fontFamily}) => {
   return {update};
 };
 
-// The default -s in the dates cant be used as ids in html.
-const dateToId = (date) => `date_${date.replace(/-/g, '_')}`;
 
-const makeDiv = ({sel, id}) => {
-  sel
-    .append('div')
-    .style('position', 'relative')
-    .attr('id', dateToId(id))
-    .html('');
-
-  return d3.select('#' + dateToId(id));
-};
 
 // Easy d3 transition maker. 
 // giving the transition a name avoids conflicts
@@ -151,7 +140,5 @@ module.exports = {
   makeLine,
   makeArea,
   writeDate,
-  dateToId,
-  makeDiv,
   trans,
 };
