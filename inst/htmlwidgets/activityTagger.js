@@ -34,7 +34,7 @@ HTMLWidgets.widget({
         // convert data frame to d3 friendly format
         var data = HTMLWidgets.dataframeToD3(x.data);
 
-        fitbitPlot.newData(data, []);
+        fitbitPlot.newData(data);
       },
 
       resize: function(width, height) {

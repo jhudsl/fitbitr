@@ -11,7 +11,6 @@ const dateToId = require('./chartFunctions/dateToId');
 */
 const VisualizeDays = (config) => {
   const {
-    // data,
     domTarget,
     dayHeight = 200,
     dayMargins = {left: 40, right: 80, top: 60, bottom: 30},
@@ -24,7 +23,7 @@ const VisualizeDays = (config) => {
   const sel = d3.select(domTarget);
   const colorScale = colors[9];
 
-  let dayPlots;
+  let dayPlots = {};
 
   // stores all the users tags [{tag, date, start, end}, ...]
   let tags = [];
@@ -41,11 +40,11 @@ const VisualizeDays = (config) => {
   });
 
   // append the tag legend
-  
+
   const tagLegend = TagLegend({
     sel,
     tagColors,
-    tags,
+    tags: tags,
     fontFamily,
   });
 
@@ -55,7 +54,9 @@ const VisualizeDays = (config) => {
     // update the tag legend
     tagLegend.update(tagColors, tags);
     // send all tags to each day's visualization
-    dayPlots.forEach((day) => day.updateTags({tags, lastTag}));
+    Object.keys(dayPlots).forEach((day) =>
+      dayPlots[day].updateTags({tags, lastTag})
+    );
     // send new tag info up to shiny or wherever calling this function.
     tagMessage(tags, tagColors);
   };
@@ -92,8 +93,8 @@ const VisualizeDays = (config) => {
   };
 
   const resize = () =>
-    dayPlots.forEach((day) =>
-      day.resize({width: getContainerWidth(), height: dayHeight})
+    Object.keys(dayPlots).forEach((day) =>
+      dayPlots[day].resize({width: getContainerWidth(), height: dayHeight})
     );
 
   window.addEventListener('resize', () => {
@@ -101,15 +102,17 @@ const VisualizeDays = (config) => {
   });
 
   // behavior when we get new data from the server.
-  const newData = (data, tags) => {
+  const newData = (data, newTags) => {
+    console.log('adding new data');
     const groupedData = groupByDate(data);
 
     const uniqueDays = Object.keys(groupedData);
+    console.log('unique days in new data', uniqueDays);
+    // empty holder for dayplots.
+    const newDayPlots = {};
 
-    // empty holder for dayplots. 
-    dayPlots = [];
     // DATA JOIN
-    const dayDivs = sel.selectAll('.day_viz').data(uniqueDays, (d)=> d);
+    const dayDivs = sel.selectAll('.day_viz').data(uniqueDays, (d) => d);
 
     // Enter new days
     dayDivs
@@ -120,25 +123,46 @@ const VisualizeDays = (config) => {
       .attr('id', (d) => dateToId(d))
       .html('')
       .each((date) => {
-        console.log(date);
-        dayPlots.push(
-          SingleDay({
-            data: groupedData[date],
-            date,
-            scales,
-            margins: dayMargins,
-            height: dayHeight,
-            width: getContainerWidth(),
-            sel: makeDiv({sel, id: date}),
-            onTag,
-            onTagDelete,
-            fontFamily,
-          })
-        );
+        // add the plot object to our object keyed by the date.
+        dayPlots[dateToId(date)] = SingleDay({
+          data: groupedData[date],
+          date,
+          scales,
+          margins: dayMargins,
+          height: dayHeight,
+          width: getContainerWidth(),
+          sel: makeDiv({sel, id: date}),
+          onTag,
+          onTagDelete,
+          fontFamily,
+        });
       });
 
     // Remove days no longer present
     dayDivs.exit().remove();
+
+    // this is a bit complicated and a result of bad planning, but here we create a new 'day plots' object that
+    // only has days from the current data in it. This helps the function know what days to map over when doing
+    // things like adding tags etc.
+    console.log('old dayplots object', dayPlots);
+    const currentDayPlots = {};
+
+    Object.keys(dayPlots).forEach((dayId) => {
+      console.log('checking this day', dayId);
+      const inCurrentData = uniqueDays.map((d) => dateToId(d)).includes(dayId);
+      console.log('it is in the current data', inCurrentData);
+      if (inCurrentData) {
+        currentDayPlots[dayId] = dayPlots[dayId];
+      }
+    });
+    // finally update the dayplots global with this.
+    dayPlots = currentDayPlots;
+    console.log('new dayplots object', dayPlots);
+
+    // update the tags storage. If new tags argument is left blank we simply keep old tags.
+    tags = newTags ? newTags : tags;
+    // send message to all the days to update.
+    sendTags();
   };
 
   // // kick it off
