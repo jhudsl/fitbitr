@@ -5,20 +5,21 @@
 #' @import htmlwidgets
 #'
 #' @export
-fitbitViz <- function(data, width = NULL, height = NULL, elementId = NULL) {
+activityTagger <- function(data, tags = c(), width = NULL, height = NULL, elementId = NULL) {
 
   # forward options using x
   x = list(
-    data = data
+    data = data,
+    tags = tags
   )
 
   # create widget
   htmlwidgets::createWidget(
-    name = 'fitbitViz',
+    name = 'activityTagger',
     x,
     width = width,
     height = height,
-    package = 'fitbitViewer',
+    package = 'fitbitr',
     elementId = elementId,
     sizingPolicy = htmlwidgets::sizingPolicy(
       viewer.padding = 0,
@@ -28,30 +29,30 @@ fitbitViz <- function(data, width = NULL, height = NULL, elementId = NULL) {
   )
 }
 
-#' Shiny bindings for fitbitViz
+#' Shiny bindings for activityTagger
 #'
-#' Output and render functions for using fitbitViz within Shiny
+#' Output and render functions for using activityTagger within Shiny
 #' applications and interactive Rmd documents.
 #'
 #' @param outputId output variable to read from
 #' @param width,height Must be a valid CSS unit (like \code{'100\%'},
 #'   \code{'400px'}, \code{'auto'}) or a number, which will be coerced to a
 #'   string and have \code{'px'} appended.
-#' @param expr An expression that generates a fitbitViz
+#' @param expr An expression that generates a activityTagger
 #' @param env The environment in which to evaluate \code{expr}.
 #' @param quoted Is \code{expr} a quoted expression (with \code{quote()})? This
 #'   is useful if you want to save an expression in a variable.
 #'
-#' @name fitbitViz-shiny
+#' @name activityTagger-shiny
 #'
 #' @export
-fitbitVizOutput <- function(outputId, width = '100%', height = '400px'){
-  htmlwidgets::shinyWidgetOutput(outputId, 'fitbitViz', width, height, package = 'fitbitViewer')
+activityTaggerOutput <- function(outputId, width = '100%', height = '400px'){
+  htmlwidgets::shinyWidgetOutput(outputId, 'activityTagger', width, height, package = 'fitbitr')
 }
 
-#' @rdname fitbitViz-shiny
+#' @rdname activityTagger-shiny
 #' @export
-renderFitbitViz <- function(expr, env = parent.frame(), quoted = FALSE) {
+renderActivityTagger <- function(expr, env = parent.frame(), quoted = FALSE) {
   if (!quoted) { expr <- substitute(expr) } # force quoted
-  htmlwidgets::shinyRenderWidget(expr, fitbitVizOutput, env, quoted = TRUE)
+  htmlwidgets::shinyRenderWidget(expr, activityTaggerOutput, env, quoted = TRUE)
 }

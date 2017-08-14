@@ -6,7 +6,7 @@
   "scripts": {
     "serve": "cd docs/; python -m SimpleHTTPServer 8000",
     "start": "watchify src/main.js src/main.js -t [ babelify --presets [ es2015 ] ] --standalone fitbit_viz -o docs/fitbit_viz.js -v --debug",
-    "build": "browserify src/main.js -t [ babelify --presets [ es2015 ] ] --standalone fitbit_viz > fitbitViewer/inst/htmlwidgets/lib/fitbit_viz/fitbit_viz.js",
+    "package": "cp docs/fitbit_viz.js ../lib/fitbit_viz.js",
     "buildMin": "browserify src/main.js -t [ babelify --presets [ es2015 ] ] --standalone fitbit_viz | uglifyjs -cm > dist/fitbit_viz.min.js"
   },
   "author": "Nick Strayer <nick.strayer@gmail.com> (http://nickstrayer.me)",

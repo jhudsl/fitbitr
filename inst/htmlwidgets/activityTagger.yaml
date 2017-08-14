@@ -4,7 +4,7 @@ dependencies:
     src: htmlwidgets/lib
     script:
       - d3.min.js
-  - name: sigma
+  - name: tagViz
     version: 1.0.3
     src: htmlwidgets/lib
     script:

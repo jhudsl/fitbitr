@@ -11,7 +11,7 @@ const dateToId = require('./chartFunctions/dateToId');
 */
 const VisualizeDays = (config) => {
   const {
-    data,
+    // data,
     domTarget,
     dayHeight = 200,
     dayMargins = {left: 40, right: 80, top: 60, bottom: 30},
@@ -141,8 +141,8 @@ const VisualizeDays = (config) => {
     dayDivs.exit().remove();
   };
 
-  // kick it off
-  newData(data, tags);
+  // // kick it off
+  // newData(data, tags);
 
   return {
     resize,

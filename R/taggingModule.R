@@ -9,11 +9,11 @@
 #' @examples
 #' fitbitTaggerUI('tagger')
 #' @import shiny
-fitbitTaggerUI <- function(id, width = NULL, height = NULL) {
+taggingModuleUI <- function(id, width = NULL, height = 1000) {
   # Create a namespace function using the provided id
   ns <- NS(id)
   #set up output
-  fitbitVizOutput(ns('tagviz'), width, height)
+  activityTaggerOutput(ns('tagviz'), width, height)
 }
 
 
@@ -30,8 +30,9 @@ fitbitTaggerUI <- function(id, width = NULL, height = NULL) {
 #' userTags <- callModule(fitbitTagger, 'tagger', day_data = days_profile)
 #' }
 #' @import jsonlite shiny
-fitbitTagger <- function(input, output, session, data) {
-  output$tagviz <- renderFitbitViz(fitbitViz(data))
+taggingModule <- function(input, output, session, data) {
+  output$tagviz <- renderActivityTagger(activityTagger(data))
+
   result <- reactive({
     rawReturn <- input$tagviz_tagData
     if(is.null(rawReturn)){

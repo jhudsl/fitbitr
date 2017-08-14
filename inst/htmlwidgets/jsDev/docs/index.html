@@ -50,8 +50,7 @@
     const firstData = data.filter(d => ["2017-06-23", "2017-06-24", "2017-06-25"].includes(d.date))
     const secondData = data.filter(d => !(["2017-06-23", "2017-06-24", "2017-06-25"].includes(d.date)))
 
-    const fitbitPlot = new fitbit_viz({
-      data: firstData,
+    const fitbitPlot = fitbit_viz({
       domTarget: '#viz',
       width,
       tagMessage: (tags, colors) => console.log('new tags', tags, colors),
@@ -60,7 +59,7 @@
     window.setTimeout(
       function () {
         fitbitPlot.newData(data,[])
-      }, 7000
+      }, 1000
     );
 
   })
