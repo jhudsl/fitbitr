@@ -24,12 +24,20 @@ extractIntraday <- function(parsedQuery){
     type <- 'heart rate'
   }
 
-  # Extract the data from the list and add a type column so we have that info.
-  return(
-    parsedQuery[[intradayField]]$dataset %>%
-      dplyr::mutate(
-        type = type,
-        time = as.numeric(lubridate::hms(time))
-      )
+  timeSeriesData <- parsedQuery[[intradayField]]$dataset
+
+  if(length(timeSeriesData) == 0){
+    # If our query is empty, meaning data hasn't been synced, then return an empty dataframe.
+    return(dplyr::data_frame(type = character(), time = numeric(), value = numeric()))
+  } else {
+    # Otherwise, extract the data from the list and add a type column so we have that info.
+    return(
+      timeSeriesData %>%
+        dplyr::mutate(
+          type = type,
+          time = as.numeric(lubridate::hms(time))
+        )
     )
+  }
+
 }
