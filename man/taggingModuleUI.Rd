@@ -4,7 +4,7 @@
 \alias{taggingModuleUI}
 \title{Plots a series of fitbit time series charts with a tagger.}
 \usage{
-taggingModuleUI(id, width = NULL, height = NULL)
+taggingModuleUI(id, width = NULL, height = 1000)
 }
 \arguments{
 \item{id}{the id you will use to keep track of this component in your app}

@@ -4,7 +4,8 @@
 \alias{activityTagger}
 \title{<Add Title>}
 \usage{
-activityTagger(message, width = NULL, height = NULL, elementId = NULL)
+activityTagger(data, tags = c(), width = NULL, height = NULL,
+  elementId = NULL)
 }
 \description{
 <Add Description>
