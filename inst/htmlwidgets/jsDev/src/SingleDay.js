@@ -9,7 +9,7 @@ const {
 } = require('./chartHelpers');
 
 const Tagger = require('./Tagger/Tagger');
-const TagViz = require('./TagViz');
+const TagViz = require('./tagViz');
 
 /* Takes a bunch of self explanatory variables, but mostly the data as a json file and the date 
  * @param {Array} data - This is an array of objects with keys "hr", "steps", and "time".
@@ -105,7 +105,8 @@ const SingleDay = (config) => {
   });
 
   /** Gets new tags and visualizes them */
-  const updateTags = ({tags, lastTag}) => {
+  const updateTags = ({tags, lastTag}) => { 
+    console.log('running update tags!', tags);
     // filter tags to this day
     daysTags = tags.filter((tag) => tag.date === date);
     tagViz.draw(daysTags);
