@@ -15,4 +15,5 @@ Imports: dplyr,
     lubridate,
     tidyr,
     jsonlite,
-    shiny
+    shiny,
+    htmlwidgets
