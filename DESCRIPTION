@@ -16,4 +16,5 @@ Imports: dplyr,
     tidyr,
     jsonlite,
     shiny,
-    htmlwidgets
+    htmlwidgets,
+    base64enc
