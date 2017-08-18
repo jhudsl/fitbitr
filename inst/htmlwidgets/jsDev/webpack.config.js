@@ -1,3 +1,19 @@
 module.exports = {
-  entry: './path/to/my/entry/file.js'
+  entry: './src/main.js',
+  output: {
+    library: 'tagViz',
+    libraryTarget: 'umd',
+    filename: 'demo/tagViz.js',
+  },
+  module: {
+    loaders: [
+      {
+        exclude: '/node_modules/',
+        loader: 'babel-loader',
+        query: {
+          presets: ['es2015'],
+        },
+      },
+    ],
+  },
 };

@@ -174,4 +174,6 @@ const VisualizeDays = (config) => {
   };
 };
 
+console.log("hi")
+
 module.exports = VisualizeDays;
