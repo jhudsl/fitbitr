@@ -6,6 +6,9 @@ const makeDiv = require('./chartFunctions/makeDiv');
 const {Set1: colors} = require('colorbrewer');
 const dateToId = require('./chartFunctions/dateToId');
 
+import {createStore} from 'redux';
+import mainReducer from './reducers/index';
+
 /* Takes multiple day's worth of data and spins out a day viz for each along with
 *  some tagging logic to go with it.
 */
@@ -167,13 +170,13 @@ const VisualizeDays = (config) => {
 
   // // kick it off
   // newData(data, tags);
+  const store = createStore(mainReducer);
+  console.log(store.getState())
 
   return {
     resize,
     newData,
   };
 };
-
-console.log("hi")
 
 module.exports = VisualizeDays;
