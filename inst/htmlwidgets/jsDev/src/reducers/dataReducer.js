@@ -5,6 +5,6 @@ const dataReducer = (state = [], action) => {
     default:
       return state;
   }
-}
+};
 
 module.exports = dataReducer;

@@ -10,8 +10,8 @@ const TagViz = (config) => {
     svg,
     scales,
     height,
+    onTagDelete,
     barThickness = 25,
-    onTagDelete = (tag) => console.log(tag),
   } = config;
 
   const tagG = svg.append('g').attr('class', 'tags_container');
@@ -77,8 +77,6 @@ const TagViz = (config) => {
   }
 
   const draw = (tags) => {
-
-    console.log('running tagviz draw!', tags);
 
     // JOIN data to our tags holder
     const tagBars = tagG.selectAll('.tag').data(tags, (d) => d.start);

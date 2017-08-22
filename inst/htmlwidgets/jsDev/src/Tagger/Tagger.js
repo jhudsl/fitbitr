@@ -11,6 +11,7 @@ const Tagger = (config) => {
     scales,
     date,
     onTag,
+    store,
     fontFamily,
   } = config;
 
@@ -22,6 +23,7 @@ const Tagger = (config) => {
       date,
       scales,
       onTag,
+      store,
       fontFamily,
     });
 

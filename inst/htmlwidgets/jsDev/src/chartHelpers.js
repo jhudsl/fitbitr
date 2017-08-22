@@ -126,13 +126,6 @@ const writeDate = ({date, margins, width, height, svg, fontFamily}) => {
 };
 
 
-
-// Easy d3 transition maker. 
-// giving the transition a name avoids conflicts
-const trans = (name = 'sliding', speed = 500) => d3.transition(name)
-  .duration(speed);
-
-
 module.exports = {
   setUpSVG,
   makeScales,
@@ -140,5 +133,4 @@ module.exports = {
   makeLine,
   makeArea,
   writeDate,
-  trans,
 };
