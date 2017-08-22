@@ -23,12 +23,11 @@ const VisualizeDays = (config) => {
     domTarget,
     tagMessage,
     dayHeight = 200,
-    width = 500,
+    width = d3.select(domTarget).style('width'),
     yMax = 200,
     margins = {left: 40, right: 80, top: 60, bottom: 30},
     fontFamily = 'optima',
   } = config;
-  const getContainerWidth = () => sel._groups[0][0].offsetWidth;
 
   // Set up store;
   const store = createStore(mainReducer);
@@ -49,7 +48,7 @@ const VisualizeDays = (config) => {
   let tagColors = {};
 
   // set up function to generate a common set of scales for all the days.
-  const scalesGen = makeScales(margins, yMax);
+  const scalesGen = makeScales(yMax);
 
   // set up data subseting function using supplied x and y keys
   const dataSubsetter = subsetData({xVal: 'time', yVal: 'value'});
@@ -104,22 +103,18 @@ const VisualizeDays = (config) => {
     sendTags();
   };
 
-  const resize = () =>
-    Object.keys(dayPlots).forEach((day) =>
-      dayPlots[day].resize({width: getContainerWidth(), height: dayHeight})
-    );
-
-  window.addEventListener('resize', () => {
-    resize();
-  });
+  // window.addEventListener('resize', () => {
+  //   resize();
+  // });
 
   // behavior when we get new data from the server.
   const newData = (data, newTags) => {
     const groupedData = groupData(data);
     const cWidth = width - margins.left - margins.right;
-    const cHeight = dayHeight - margins.top - margins.bottom; 
+    const cHeight = dayHeight - margins.top - margins.bottom;
 
-    console.log(groupedData);
+    console.log('width', width);
+    svg.style('height', groupedData.length * dayHeight).style('width', width);
 
     const dayChart = DayChart({
       dataSubsetter,
@@ -135,68 +130,26 @@ const VisualizeDays = (config) => {
     days
       .enter()
       .append('g')
-      .attr('class', 'day_viz')
+      .attr('class', 'dayViz')
       .attr('id', (d) => dateToId(d.date))
       .attr('width', width)
       .attr('height', dayHeight)
-      .attr('transform', `translate(${margins.left}, ${margins.top})`)
       .call(function(selection) {
         selection.each(function(d, i) {
           // generate chart here; `d` is the data and `this` is the element
           dayChart(d, this);
         });
-      });
+      })
+      .merge(days) // merge with the updating elements too. 
+      .attr(
+        'transform',
+        (d, i) => `translate(${margins.left}, ${margins.top + i * dayHeight})`
+      );
 
-    // // empty holder for dayplots.
-    // const newDayPlots = {};
+    // Remove days no longer present
+    days.exit().remove();
 
-    // // DATA JOIN
-    // const dayDivs = sel.selectAll('.day_viz').data(uniqueDays, (d) => d);
-
-    // // Enter new days
-    // dayDivs
-    //   .enter()
-    //   .append('div')
-    //   .style('position', 'relative')
-    //   .attr('class', 'day_viz')
-    //   .attr('id', (d) => dateToId(d))
-    //   .html('')
-    //   .each((date) => {
-    //     console.log('looping through at', date)
-    //     // add the plot object to our object keyed by the date.
-    //     dayPlots[dateToId(date)] = SingleDay({
-    //       data: groupedData[date],
-    //       dataSubsetter,
-    //       date,
-    //       scalesGen,
-    //       margins: dayMargins,
-    //       height: dayHeight,
-    //       width: getContainerWidth(),
-    //       sel: makeDiv({sel, id: date}),
-    //       onTag,
-    //       onTagDelete,
-    //       fontFamily,
-    //       store,
-    //     });
-    //   });
-
-    // // Remove days no longer present
-    // dayDivs.exit().remove();
-
-    // // this is a bit complicated and a result of bad planning, but here we create a new 'day plots' object that
-    // // only has days from the current data in it. This helps the function know what days to map over when doing
-    // // things like adding tags etc.
-    // const currentDayPlots = {};
-
-    // Object.keys(dayPlots).forEach((dayId) => {
-    //   const inCurrentData = uniqueDays.map((d) => dateToId(d)).includes(dayId);
-    //   if (inCurrentData) {
-    //     currentDayPlots[dayId] = dayPlots[dayId];
-    //   }
-    // });
-    // // finally update the dayplots global with this.
-    // dayPlots = currentDayPlots;
-
+    
     // // update the tags storage. If new tags argument is left blank we simply keep old tags.
     // tags = newTags ? newTags : tags;
     // // send message to all the days to update.
@@ -204,7 +157,7 @@ const VisualizeDays = (config) => {
   };
 
   return {
-    resize,
+    // resize,
     newData,
   };
 };

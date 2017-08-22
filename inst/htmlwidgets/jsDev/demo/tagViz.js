@@ -80,18 +80,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var SingleDay = __webpack_require__(157);
-	var TagLegend = __webpack_require__(158);
+	var SingleDay = __webpack_require__(158);
+	var TagLegend = __webpack_require__(159);
 
-	var _require = __webpack_require__(160),
+	var _require = __webpack_require__(161),
 	    groupByDate = _require.groupByDate;
 
-	var makeDiv = __webpack_require__(161);
+	var makeDiv = __webpack_require__(162);
 
-	var _require2 = __webpack_require__(163),
+	var _require2 = __webpack_require__(164),
 	    colors = _require2.Set1;
 
-	var dateToId = __webpack_require__(162);
+	var dateToId = __webpack_require__(163);
 
 	/* Takes multiple day's worth of data and spins out a day viz for each along with
 	*  some tagging logic to go with it.
@@ -102,7 +102,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      _config$dayHeight = config.dayHeight,
 	      dayHeight = _config$dayHeight === undefined ? 200 : _config$dayHeight,
 	      _config$width = config.width,
-	      width = _config$width === undefined ? 500 : _config$width,
+	      width = _config$width === undefined ? d3.select(domTarget).style('width') : _config$width,
 	      _config$yMax = config.yMax,
 	      yMax = _config$yMax === undefined ? 200 : _config$yMax,
 	      _config$margins = config.margins,
@@ -110,11 +110,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      _config$fontFamily = config.fontFamily,
 	      fontFamily = _config$fontFamily === undefined ? 'optima' : _config$fontFamily;
 
-	  var getContainerWidth = function getContainerWidth() {
-	    return sel._groups[0][0].offsetWidth;
-	  };
-
 	  // Set up store;
+
 	  var store = (0, _redux.createStore)(_index2.default);
 	  store.subscribe(function () {
 	    return console.log('running subscribed function!', store.getState());
@@ -133,7 +130,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var tagColors = {};
 
 	  // set up function to generate a common set of scales for all the days.
-	  var scalesGen = (0, _makeScales2.default)(margins, yMax);
+	  var scalesGen = (0, _makeScales2.default)(yMax);
 
 	  // set up data subseting function using supplied x and y keys
 	  var dataSubsetter = (0, _subsetData2.default)({ xVal: 'time', yVal: 'value' });
@@ -192,15 +189,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    sendTags();
 	  };
 
-	  var resize = function resize() {
-	    return Object.keys(dayPlots).forEach(function (day) {
-	      return dayPlots[day].resize({ width: getContainerWidth(), height: dayHeight });
-	    });
-	  };
-
-	  window.addEventListener('resize', function () {
-	    resize();
-	  });
+	  // window.addEventListener('resize', () => {
+	  //   resize();
+	  // });
 
 	  // behavior when we get new data from the server.
 	  var newData = function newData(data, newTags) {
@@ -208,7 +199,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var cWidth = width - margins.left - margins.right;
 	    var cHeight = dayHeight - margins.top - margins.bottom;
 
-	    console.log(groupedData);
+	    console.log('width', width);
+	    svg.style('height', groupedData.length * dayHeight).style('width', width);
 
 	    var dayChart = (0, _DayChart2.default)({
 	      dataSubsetter: dataSubsetter,
@@ -223,64 +215,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	    });
 
 	    // ENTER new days
-	    days.enter().append('g').attr('class', 'day_viz').attr('id', function (d) {
+	    days.enter().append('g').attr('class', 'dayViz').attr('id', function (d) {
 	      return dateToId(d.date);
-	    }).attr('width', width).attr('height', dayHeight).attr('transform', 'translate(' + margins.left + ', ' + margins.top + ')').call(function (selection) {
+	    }).attr('width', width).attr('height', dayHeight).call(function (selection) {
 	      selection.each(function (d, i) {
 	        // generate chart here; `d` is the data and `this` is the element
 	        dayChart(d, this);
 	      });
+	    }).merge(days) // merge with the updating elements too. 
+	    .attr('transform', function (d, i) {
+	      return 'translate(' + margins.left + ', ' + (margins.top + i * dayHeight) + ')';
 	    });
 
-	    // // empty holder for dayplots.
-	    // const newDayPlots = {};
-
-	    // // DATA JOIN
-	    // const dayDivs = sel.selectAll('.day_viz').data(uniqueDays, (d) => d);
-
-	    // // Enter new days
-	    // dayDivs
-	    //   .enter()
-	    //   .append('div')
-	    //   .style('position', 'relative')
-	    //   .attr('class', 'day_viz')
-	    //   .attr('id', (d) => dateToId(d))
-	    //   .html('')
-	    //   .each((date) => {
-	    //     console.log('looping through at', date)
-	    //     // add the plot object to our object keyed by the date.
-	    //     dayPlots[dateToId(date)] = SingleDay({
-	    //       data: groupedData[date],
-	    //       dataSubsetter,
-	    //       date,
-	    //       scalesGen,
-	    //       margins: dayMargins,
-	    //       height: dayHeight,
-	    //       width: getContainerWidth(),
-	    //       sel: makeDiv({sel, id: date}),
-	    //       onTag,
-	    //       onTagDelete,
-	    //       fontFamily,
-	    //       store,
-	    //     });
-	    //   });
-
-	    // // Remove days no longer present
-	    // dayDivs.exit().remove();
-
-	    // // this is a bit complicated and a result of bad planning, but here we create a new 'day plots' object that
-	    // // only has days from the current data in it. This helps the function know what days to map over when doing
-	    // // things like adding tags etc.
-	    // const currentDayPlots = {};
-
-	    // Object.keys(dayPlots).forEach((dayId) => {
-	    //   const inCurrentData = uniqueDays.map((d) => dateToId(d)).includes(dayId);
-	    //   if (inCurrentData) {
-	    //     currentDayPlots[dayId] = dayPlots[dayId];
-	    //   }
-	    // });
-	    // // finally update the dayplots global with this.
-	    // dayPlots = currentDayPlots;
+	    // Remove days no longer present
+	    days.exit().remove();
 
 	    // // update the tags storage. If new tags argument is left blank we simply keep old tags.
 	    // tags = newTags ? newTags : tags;
@@ -289,7 +237,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  };
 
 	  return {
-	    resize: resize,
+	    // resize,
 	    newData: newData
 	  };
 	};
@@ -1650,15 +1598,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	// returns a scale for x y and to convert to seconds from screen position
 	// as well as returning a function for recomputing the size dependent components.
-	var makeScales = (0, _rambda.curry)(function (margins, yMax, height, width) {
-	  var chartWidth = width - margins.left - margins.right;
-	  var chartHeight = height - margins.top - margins.bottom;
+	// the height and width are post margins convention.
+	var makeScales = (0, _rambda.curry)(function (yMax, height, width) {
+	  var x = (0, _d.scaleTime)().domain([(0, _secondsToTime2.default)(0), (0, _secondsToTime2.default)(86400)]).range([0, width]);
 
-	  var x = (0, _d.scaleTime)().domain([(0, _secondsToTime2.default)(0), (0, _secondsToTime2.default)(86400)]).range([0, chartWidth]);
+	  var y = (0, _d.scaleLinear)().domain([0, yMax]).range([height, 0]);
 
-	  var y = (0, _d.scaleLinear)().domain([0, yMax]).range([chartHeight, 0]);
-
-	  var toSeconds = (0, _d.scaleLinear)().range([0, 86400]).domain([0, chartWidth]);
+	  var toSeconds = (0, _d.scaleLinear)().range([0, 86400]).domain([0, width]);
 
 	  return {
 	    x: x,
@@ -36023,21 +35969,33 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _rambda = __webpack_require__(27);
 
-	var _trySelect = __webpack_require__(165);
+	var _trySelect = __webpack_require__(150);
 
 	var _trySelect2 = _interopRequireDefault(_trySelect);
 
+	var _drawAxes = __webpack_require__(166);
+
+	var _drawAxes2 = _interopRequireDefault(_drawAxes);
+
+	var _writeDate = __webpack_require__(167);
+
+	var _writeDate2 = _interopRequireDefault(_writeDate);
+
+	var _drawLine = __webpack_require__(168);
+
+	var _drawLine2 = _interopRequireDefault(_drawLine);
+
+	var _lineGenerators = __webpack_require__(169);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var _require = __webpack_require__(150),
+	var _require = __webpack_require__(151),
 	    setUpSVG = _require.setUpSVG,
-	    drawAxes = _require.drawAxes,
 	    makeLine = _require.makeLine,
-	    makeArea = _require.makeArea,
-	    writeDate = _require.writeDate;
+	    makeArea = _require.makeArea;
 
-	var Tagger = __webpack_require__(152);
-	var TagViz = __webpack_require__(156);
+	var Tagger = __webpack_require__(153);
+	var TagViz = __webpack_require__(157);
 
 	// import addTag from './actions/addTag';
 
@@ -36070,9 +36028,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	      _config$fontFamily = config.fontFamily,
 	      fontFamily = _config$fontFamily === undefined ? 'avenir' : _config$fontFamily;
 
+	  // console.log('config', config);
+	  // console.log('data', data);
 
-	  console.log('config', config);
-	  console.log('data', data);
 	  var svg = d3.select(selection);
 	  var scales = scalesGen(height, width);
 	  var hrData = dataSubsetter('heart rate', data);
@@ -36083,50 +36041,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var hrG = tryG('.hr_plot');
 	  var stepsG = tryG('.steps_plot');
 
-	  // const stepsG = svg.append('g').attr('class', 'steps_plot');
-	  // const axes = drawAxes({svg, scales, height, margins, fontFamily});
-	  // const dateLabel = writeDate({
-	  //   date,
-	  //   margins,
-	  //   width,
-	  //   height,
-	  //   svg,
-	  //   fontFamily,
-	  // });
+	  (0, _drawAxes2.default)({ svg: svg, scales: scales, height: height });
+	  (0, _writeDate2.default)({ width: width, height: height }, svg, date);
 
-	  // let daysTags = [];
+	  var hrLine = (0, _drawLine2.default)({
+	    gEl: hrG,
+	    lineGen: (0, _lineGenerators.lineGen)(scales),
+	    lineData: hrData
+	  }).style('stroke', hrColor).style('stroke-width', lineThickness).style('fill', 'none');
 
-	  // const drawHeartRate = (line) => {
-	  //   // grab the correct g element
-	  //   const hrLine = hrG.selectAll('path').data([hrData]);
-
-	  //   // Update existing line
-	  //   hrLine.attr('d', line);
-
-	  //   // ENTER new line
-	  //   hrLine
-	  //     .enter()
-	  //     .append('path')
-	  //     .attr('d', line)
-	  //     .style('stroke', hrColor)
-	  //     .style('stroke-width', lineThickness)
-	  //     .style('fill', 'none');
-	  // };
-
-	  // const drawSteps = (area) => {
-	  //   const stepLine = stepsG.selectAll('path').data([stepsData]);
-
-	  //   // Update existing line
-	  //   stepLine.attr('d', area);
-
-	  //   // ENTER new line
-	  //   stepLine
-	  //     .enter()
-	  //     .append('path')
-	  //     .attr('d', area)
-	  //     .style('fill', stepsColor)
-	  //     .style('fill-opacity', 0.5);
-	  // };
+	  var stepsLine = (0, _drawLine2.default)({
+	    gEl: stepsG,
+	    lineGen: (0, _lineGenerators.areaGen)(scales),
+	    lineData: stepsData
+	  }).style('fill', stepsColor).style('fill-opacity', 0.5);
 
 	  // // set up a tagging system for this day
 	  // const tagger = Tagger({
@@ -36188,9 +36116,32 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _rambda = __webpack_require__(27);
+
+	// attempt to make a single selection using d3.select. If it succeeeds then it returns
+	// that selection to you. Otherwise it adds the desired element type (e.g. div) in the slot
+	// and gives it the class or id of the identifier.
+	exports.default = (0, _rambda.curry)(function (parent, type, identifier) {
+	  var isClass = identifier.split('')[0] === '.';
+
+	  var selectionAttempt = parent.select(identifier);
+
+	  return selectionAttempt.empty() ? parent.append(type).attr(isClass ? 'class' : 'id', identifier.slice(1)) : selectionAttempt;
+	});
+
+/***/ }),
+/* 151 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
 	var d3 = __webpack_require__(28);
 
-	var _require = __webpack_require__(151),
+	var _require = __webpack_require__(152),
 	    secondsToTime = _require.secondsToTime,
 	    timeFormat = _require.timeFormat,
 	    toMonthDay = _require.toMonthDay;
@@ -36317,40 +36268,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	  });
 	};
 
-	var writeDate = function writeDate(_ref6) {
-	  var date = _ref6.date,
-	      margins = _ref6.margins,
-	      width = _ref6.width,
-	      height = _ref6.height,
-	      svg = _ref6.svg,
-	      fontFamily = _ref6.fontFamily;
-
-	  var dateLabel = svg.append('g').attr('class', 'current_date').append('text').attr('text-anchor', 'middle').attr('font-family', fontFamily).attr('font-size', 20).text(toMonthDay(date));
-
-	  // moves the date upon resize.
-	  var update = function update(_ref7) {
-	    var width = _ref7.width,
-	        height = _ref7.height;
-	    return dateLabel.attr('transform', 'translate(' + (width - margins.right * 1.2) + ',' + (height - margins.top) / 2 + ') rotate(90)');
-	  };
-
-	  // initialize into correct position.
-	  update({ width: width, height: height });
-
-	  return { update: update };
-	};
-
 	module.exports = {
 	  setUpSVG: setUpSVG,
 	  makeScales: makeScales,
 	  drawAxes: drawAxes,
 	  makeLine: makeLine,
-	  makeArea: makeArea,
-	  writeDate: writeDate
+	  makeArea: makeArea
 	};
 
 /***/ }),
-/* 151 */
+/* 152 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -36384,13 +36311,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ }),
-/* 152 */
+/* 153 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var TagBrush = __webpack_require__(153);
-	var TagInput = __webpack_require__(154);
+	var TagBrush = __webpack_require__(154);
+	var TagInput = __webpack_require__(155);
 
 	/* Sets up a given days tag interface. Wraps an input and a d3 brush behavior and spits out new tags. */
 	var Tagger = function Tagger(config) {
@@ -36441,7 +36368,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = Tagger;
 
 /***/ }),
-/* 153 */
+/* 154 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -36505,7 +36432,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = TagBrush;
 
 /***/ }),
-/* 154 */
+/* 155 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -36516,9 +36443,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var d3 = _interopRequireWildcard(_d2);
 
-	var _timeHelpers = __webpack_require__(151);
+	var _timeHelpers = __webpack_require__(152);
 
-	var _addTag = __webpack_require__(155);
+	var _addTag = __webpack_require__(156);
 
 	var _addTag2 = _interopRequireDefault(_addTag);
 
@@ -36633,7 +36560,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = TagInput;
 
 /***/ }),
-/* 155 */
+/* 156 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -36646,15 +36573,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = addTag;
 
 /***/ }),
-/* 156 */
+/* 157 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _require = __webpack_require__(151),
+	var _require = __webpack_require__(152),
 	    secondsToTime = _require.secondsToTime;
 
-	var _require2 = __webpack_require__(150),
+	var _require2 = __webpack_require__(151),
 	    trans = _require2.trans;
 
 	/* Is supplied with a svg object and some config options and then exposes 
@@ -36741,20 +36668,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = TagViz;
 
 /***/ }),
-/* 157 */
+/* 158 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _require = __webpack_require__(150),
+	var _require = __webpack_require__(151),
 	    setUpSVG = _require.setUpSVG,
 	    drawAxes = _require.drawAxes,
 	    makeLine = _require.makeLine,
 	    makeArea = _require.makeArea,
 	    writeDate = _require.writeDate;
 
-	var Tagger = __webpack_require__(152);
-	var TagViz = __webpack_require__(156);
+	var Tagger = __webpack_require__(153);
+	var TagViz = __webpack_require__(157);
 
 	// import addTag from './actions/addTag';
 
@@ -36901,18 +36828,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = SingleDay;
 
 /***/ }),
-/* 158 */
+/* 159 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var _rambda = __webpack_require__(27);
 
-	var _transition = __webpack_require__(159);
+	var _transition = __webpack_require__(160);
 
 	var _transition2 = _interopRequireDefault(_transition);
 
-	var _trySelect = __webpack_require__(165);
+	var _trySelect = __webpack_require__(150);
 
 	var _trySelect2 = _interopRequireDefault(_trySelect);
 
@@ -36993,7 +36920,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = TagLegend;
 
 /***/ }),
-/* 159 */
+/* 160 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -37011,14 +36938,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = trans;
 
 /***/ }),
-/* 160 */
+/* 161 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var d3 = __webpack_require__(28);
 
-	var _require = __webpack_require__(151),
+	var _require = __webpack_require__(152),
 	    secondsToTime = _require.secondsToTime;
 
 	var subsetData = function subsetData(_ref) {
@@ -37060,13 +36987,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ }),
-/* 161 */
+/* 162 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var d3 = __webpack_require__(28);
-	var dateToId = __webpack_require__(162);
+	var dateToId = __webpack_require__(163);
 
 	var makeDiv = function makeDiv(_ref) {
 	  var sel = _ref.sel,
@@ -37087,7 +37014,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = makeDiv;
 
 /***/ }),
-/* 162 */
+/* 163 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -37099,15 +37026,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ }),
-/* 163 */
+/* 164 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(164);
+	module.exports = __webpack_require__(165);
 
 /***/ }),
-/* 164 */
+/* 165 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;"use strict";
@@ -37430,7 +37357,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	}();
 
 /***/ }),
-/* 165 */
+/* 166 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -37441,16 +37368,116 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _rambda = __webpack_require__(27);
 
-	// attempt to make a single selection using d3.select. If it succeeeds then it returns
-	// that selection to you. Otherwise it adds the desired element type (e.g. div) in the slot
-	// and gives it the class or id of the identifier.
-	exports.default = (0, _rambda.curry)(function (parent, type, identifier) {
-	  var isClass = identifier.split('')[0] === '.';
+	var _trySelect = __webpack_require__(150);
 
-	  var selectionAttempt = parent.select(identifier);
+	var _trySelect2 = _interopRequireDefault(_trySelect);
 
-	  return selectionAttempt.empty() ? parent.append(type).attr(isClass ? 'class' : 'id', identifier.slice(1)) : selectionAttempt;
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = function (_ref) {
+	  var svg = _ref.svg,
+	      scales = _ref.scales,
+	      height = _ref.height;
+
+	  // Add the axes holders
+	  var tryG = (0, _trySelect2.default)(svg, 'g');
+
+	  // draw x-axis
+	  tryG('.x_axis').attr('transform', 'translate(0,0)').attr('transform', 'translate(0,' + height + ')').call(d3.axisBottom(scales.x).tickFormat(d3.timeFormat('%I %p')));
+
+	  // draw y-axis
+	  tryG('.y_axis').call(d3.axisLeft(scales.y).ticks(5));
+	};
+
+/***/ }),
+/* 167 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
 	});
+
+	var _rambda = __webpack_require__(27);
+
+	var _moment = __webpack_require__(30);
+
+	var _moment2 = _interopRequireDefault(_moment);
+
+	var _trySelect = __webpack_require__(150);
+
+	var _trySelect2 = _interopRequireDefault(_trySelect);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var toMonthDay = function toMonthDay(date) {
+	  return (0, _moment2.default)(date).format('MMM  DD');
+	};
+
+	exports.default = (0, _rambda.curry)(function (_ref, svg, date) {
+	  var width = _ref.width,
+	      height = _ref.height;
+
+	  var tryText = (0, _trySelect2.default)(svg, 'text');
+
+	  tryText('.current_date').attr('text-anchor', 'middle').attr('font-size', 20).text(toMonthDay(date)).attr('transform', 'translate(' + width + ' , ' + height / 2.05 + ') rotate(90)');
+	});
+
+/***/ }),
+/* 168 */
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	exports.default = function (_ref) {
+	  var gEl = _ref.gEl,
+	      lineGen = _ref.lineGen,
+	      lineData = _ref.lineData;
+
+	  // grab the correct g element
+	  var pathEl = gEl.selectAll('path').data([lineData]);
+
+	  // Update existing line
+	  pathEl.attr('d', lineGen);
+
+	  // ENTER new line
+	  pathEl.enter().append('path').attr('d', lineGen);
+
+	  return gEl.selectAll('path');
+	};
+
+/***/ }),
+/* 169 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _d = __webpack_require__(28);
+
+	var lineGen = function lineGen(scales) {
+	  return (0, _d.area)().x(function (d) {
+	    return scales.x(d.x);
+	  }).y(function (d) {
+	    return scales.y(d.y);
+	  });
+	};
+
+	var areaGen = function areaGen(scales) {
+	  return (0, _d.area)().curve(d3.curveStepAfter).x(function (d) {
+	    return scales.x(d.x);
+	  }).y(function (d) {
+	    return scales.y(0);
+	  }).y1(function (d) {
+	    return scales.y(d.y);
+	  });
+	};
+
+	module.exports = { lineGen: lineGen, areaGen: areaGen };
 
 /***/ })
 /******/ ])

@@ -1,17 +1,15 @@
 import {curry} from 'rambda';
 
-const {
-  setUpSVG,
-  drawAxes,
-  makeLine,
-  makeArea,
-  writeDate,
-} = require('./chartHelpers');
+const {setUpSVG, makeLine, makeArea} = require('./chartHelpers');
 
 const Tagger = require('./Tagger/Tagger');
 const TagViz = require('./tagViz');
 
 import trySelect from './chartFunctions/trySelect';
+import drawAxes from './chartFunctions/drawAxes';
+import writeDate from './chartFunctions/writeDate';
+import drawLine from './chartFunctions/drawLine';
+import {lineGen, areaGen} from './chartFunctions/lineGenerators';
 
 // import addTag from './actions/addTag';
 
@@ -40,63 +38,38 @@ export default curry((config, {date, data}, selection) => {
     fontFamily = 'avenir',
   } = config;
 
-  console.log('config', config);
-  console.log('data', data);
+  // console.log('config', config);
+  // console.log('data', data);
   const svg = d3.select(selection);
   let scales = scalesGen(height, width);
   const hrData = dataSubsetter('heart rate', data);
   const stepsData = dataSubsetter('steps', data);
 
   const tryG = trySelect(svg, 'g');
-  
+
   const hrG = tryG('.hr_plot');
   const stepsG = tryG('.steps_plot');
 
-  // const stepsG = svg.append('g').attr('class', 'steps_plot');
-  // const axes = drawAxes({svg, scales, height, margins, fontFamily});
-  // const dateLabel = writeDate({
-  //   date,
-  //   margins,
-  //   width,
-  //   height,
-  //   svg,
-  //   fontFamily,
-  // });
+  drawAxes({svg, scales, height});
+  writeDate({width, height}, svg, date);
 
-  // let daysTags = [];
+  const hrLine = drawLine({
+    gEl: hrG,
+    lineGen: lineGen(scales),
+    lineData: hrData,
+  })
+    .style('stroke', hrColor)
+    .style('stroke-width', lineThickness)
+    .style('fill', 'none');
 
-  // const drawHeartRate = (line) => {
-  //   // grab the correct g element
-  //   const hrLine = hrG.selectAll('path').data([hrData]);
-
-  //   // Update existing line
-  //   hrLine.attr('d', line);
-
-  //   // ENTER new line
-  //   hrLine
-  //     .enter()
-  //     .append('path')
-  //     .attr('d', line)
-  //     .style('stroke', hrColor)
-  //     .style('stroke-width', lineThickness)
-  //     .style('fill', 'none');
-  // };
-
-  // const drawSteps = (area) => {
-  //   const stepLine = stepsG.selectAll('path').data([stepsData]);
-
-  //   // Update existing line
-  //   stepLine.attr('d', area);
-
-  //   // ENTER new line
-  //   stepLine
-  //     .enter()
-  //     .append('path')
-  //     .attr('d', area)
-  //     .style('fill', stepsColor)
-  //     .style('fill-opacity', 0.5);
-  // };
-
+  const stepsLine = drawLine({
+    gEl: stepsG,
+    lineGen: areaGen(scales),
+    lineData: stepsData,
+  })
+    .style('fill', stepsColor)
+    .style('fill-opacity', 0.5);
+  
   // // set up a tagging system for this day
   // const tagger = Tagger({
   //   svg,

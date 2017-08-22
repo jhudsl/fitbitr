@@ -52,17 +52,17 @@
 
     const fitbitPlot = tagViz({
       domTarget: '#viz',
-      width,
+      width: 1000,
       tagMessage: (tags, colors) => console.log('new tags', tags, colors),
     });
 
     fitbitPlot.newData(firstData,[])
 
-    // window.setTimeout(
-    //   function () {
-    //     fitbitPlot.newData(data)
-    //   }, 5000
-    // );
+    window.setTimeout(
+      function () {
+        fitbitPlot.newData(data)
+      }, 5000
+    );
 
   })
 
