@@ -1,4 +1,5 @@
 import {curry} from 'rambda';
+import * as d3 from 'd3';
 
 const {setUpSVG, makeLine, makeArea} = require('./chartHelpers');
 
@@ -10,6 +11,7 @@ import drawAxes from './chartFunctions/drawAxes';
 import writeDate from './chartFunctions/writeDate';
 import drawLine from './chartFunctions/drawLine';
 import {lineGen, areaGen} from './chartFunctions/lineGenerators';
+import disableBrushes from './chartFunctions/disableBrushes';
 
 // import addTag from './actions/addTag';
 
@@ -69,7 +71,34 @@ export default curry((config, {date, data}, selection) => {
   })
     .style('fill', stepsColor)
     .style('fill-opacity', 0.5);
-  
+
+  const tagInput = d3.select('#tagInput');
+
+  const onBrush = function() {
+    const [start, end] = d3.event.selection;
+    const {pageX, pageY} = d3.event.sourceEvent;
+
+    // kill all the brushes on other dates
+    disableBrushes(date);
+    
+    // move input
+    tagInput
+      .style('display', 'block')
+      .style('left', pageX + 'px')
+      .style('top', pageY - 28 + 'px')
+      .text('hiyo');
+
+    console.log(d3.event);
+    // console.log('brushing from ', date);
+  };
+
+  const brush = d3
+    .brushX()
+    .extent([[0, 0], [width, height]])
+    .on('start brush end', onBrush);
+
+  const brushG = svg.append('g').attr('class', 'brush ' + date).call(brush);
+
   // // set up a tagging system for this day
   // const tagger = Tagger({
   //   svg,
@@ -113,13 +142,5 @@ export default curry((config, {date, data}, selection) => {
   //   drawSteps(makeArea(scales));
   //   // update tags
   //   tagViz.draw(daysTags);
-  // };
-
-  // // Kick off viz.
-  // resize({width, height});
-
-  // return {
-  //   resize,
-  //   updateTags,
   // };
 });

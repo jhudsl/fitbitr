@@ -13,6 +13,7 @@
   "dependencies": {
     "colorbrewer": "1.0.0",
     "d3": "^4.9.1",
+    "d3-brush": "1.0.4",
     "moment": "2.18.1",
     "rambda": "0.8.6",
     "redux": "3.7.2",
@@ -31,4 +32,4 @@
     "regenerator-runtime": "0.11.0",
     "webpack": "^1.13.2"
   }
-} 
+}

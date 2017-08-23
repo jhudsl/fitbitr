@@ -80,18 +80,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var SingleDay = __webpack_require__(158);
-	var TagLegend = __webpack_require__(159);
+	var SingleDay = __webpack_require__(163);
+	var TagLegend = __webpack_require__(164);
 
-	var _require = __webpack_require__(161),
+	var _require = __webpack_require__(166),
 	    groupByDate = _require.groupByDate;
 
-	var makeDiv = __webpack_require__(162);
+	var makeDiv = __webpack_require__(167);
 
-	var _require2 = __webpack_require__(164),
+	var _require2 = __webpack_require__(169),
 	    colors = _require2.Set1;
 
-	var dateToId = __webpack_require__(163);
+	var dateToId = __webpack_require__(168);
 
 	/* Takes multiple day's worth of data and spins out a day viz for each along with
 	*  some tagging logic to go with it.
@@ -138,6 +138,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  // set up legend with the standard defaults and then call it.
 	  var legendGen = TagLegend({ sel: sel, fontFamily: fontFamily });
 	  legendGen(tagColors, tags);
+
+	  // append a hidden div to act as our tagging interface.
+	  sel.append('div').attr('id', 'tagInput').style('width', 100).style('height', 100).style('border', '1px solid blue').style('display', 'none').style('position', 'absolute');
 
 	  var svg = sel.append('svg').attr('id', 'dayViz');
 
@@ -199,7 +202,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var cWidth = width - margins.left - margins.right;
 	    var cHeight = dayHeight - margins.top - margins.bottom;
 
-	    console.log('width', width);
 	    svg.style('height', groupedData.length * dayHeight).style('width', width);
 
 	    var dayChart = (0, _DayChart2.default)({
@@ -222,7 +224,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        // generate chart here; `d` is the data and `this` is the element
 	        dayChart(d, this);
 	      });
-	    }).merge(days) // merge with the updating elements too. 
+	    }).merge(days) // merge with the updating elements too.
 	    .attr('transform', function (d, i) {
 	      return 'translate(' + margins.left + ', ' + (margins.top + i * dayHeight) + ')';
 	    });
@@ -35967,35 +35969,47 @@ return /******/ (function(modules) { // webpackBootstrap
 	  value: true
 	});
 
+	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 	var _rambda = __webpack_require__(27);
+
+	var _d2 = __webpack_require__(28);
+
+	var d3 = _interopRequireWildcard(_d2);
 
 	var _trySelect = __webpack_require__(150);
 
 	var _trySelect2 = _interopRequireDefault(_trySelect);
 
-	var _drawAxes = __webpack_require__(166);
+	var _drawAxes = __webpack_require__(151);
 
 	var _drawAxes2 = _interopRequireDefault(_drawAxes);
 
-	var _writeDate = __webpack_require__(167);
+	var _writeDate = __webpack_require__(152);
 
 	var _writeDate2 = _interopRequireDefault(_writeDate);
 
-	var _drawLine = __webpack_require__(168);
+	var _drawLine = __webpack_require__(153);
 
 	var _drawLine2 = _interopRequireDefault(_drawLine);
 
-	var _lineGenerators = __webpack_require__(169);
+	var _lineGenerators = __webpack_require__(154);
+
+	var _disableBrushes = __webpack_require__(180);
+
+	var _disableBrushes2 = _interopRequireDefault(_disableBrushes);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var _require = __webpack_require__(151),
+	function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
+
+	var _require = __webpack_require__(156),
 	    setUpSVG = _require.setUpSVG,
 	    makeLine = _require.makeLine,
 	    makeArea = _require.makeArea;
 
-	var Tagger = __webpack_require__(153);
-	var TagViz = __webpack_require__(157);
+	var Tagger = __webpack_require__(158);
+	var TagViz = __webpack_require__(162);
 
 	// import addTag from './actions/addTag';
 
@@ -36056,6 +36070,32 @@ return /******/ (function(modules) { // webpackBootstrap
 	    lineData: stepsData
 	  }).style('fill', stepsColor).style('fill-opacity', 0.5);
 
+	  var tagInput = d3.select('#tagInput');
+
+	  var onBrush = function onBrush() {
+	    var _d3$event$selection = _slicedToArray(d3.event.selection, 2),
+	        start = _d3$event$selection[0],
+	        end = _d3$event$selection[1];
+
+	    var _d3$event$sourceEvent = d3.event.sourceEvent,
+	        pageX = _d3$event$sourceEvent.pageX,
+	        pageY = _d3$event$sourceEvent.pageY;
+
+	    // kill all the brushes on other dates
+
+	    (0, _disableBrushes2.default)(date);
+
+	    // move input
+	    tagInput.style('display', 'block').style('left', pageX + 'px').style('top', pageY - 28 + 'px').text('hiyo');
+
+	    console.log(d3.event);
+	    // console.log('brushing from ', date);
+	  };
+
+	  var brush = d3.brushX().extent([[0, 0], [width, height]]).on('start brush end', onBrush);
+
+	  var brushG = svg.append('g').attr('class', 'brush ' + date).call(brush);
+
 	  // // set up a tagging system for this day
 	  // const tagger = Tagger({
 	  //   svg,
@@ -36100,14 +36140,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  //   // update tags
 	  //   tagViz.draw(daysTags);
 	  // };
-
-	  // // Kick off viz.
-	  // resize({width, height});
-
-	  // return {
-	  //   resize,
-	  //   updateTags,
-	  // };
 	});
 
 /***/ }),
@@ -36139,9 +36171,133 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _rambda = __webpack_require__(27);
+
+	var _trySelect = __webpack_require__(150);
+
+	var _trySelect2 = _interopRequireDefault(_trySelect);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	exports.default = function (_ref) {
+	  var svg = _ref.svg,
+	      scales = _ref.scales,
+	      height = _ref.height;
+
+	  // Add the axes holders
+	  var tryG = (0, _trySelect2.default)(svg, 'g');
+
+	  // draw x-axis
+	  tryG('.x_axis').attr('transform', 'translate(0,0)').attr('transform', 'translate(0,' + height + ')').call(d3.axisBottom(scales.x).tickFormat(d3.timeFormat('%I %p')));
+
+	  // draw y-axis
+	  tryG('.y_axis').call(d3.axisLeft(scales.y).ticks(5));
+	};
+
+/***/ }),
+/* 152 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _rambda = __webpack_require__(27);
+
+	var _moment = __webpack_require__(30);
+
+	var _moment2 = _interopRequireDefault(_moment);
+
+	var _trySelect = __webpack_require__(150);
+
+	var _trySelect2 = _interopRequireDefault(_trySelect);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	var toMonthDay = function toMonthDay(date) {
+	  return (0, _moment2.default)(date).format('MMM  DD');
+	};
+
+	exports.default = (0, _rambda.curry)(function (_ref, svg, date) {
+	  var width = _ref.width,
+	      height = _ref.height;
+
+	  var tryText = (0, _trySelect2.default)(svg, 'text');
+
+	  tryText('.current_date').attr('text-anchor', 'middle').attr('font-size', 20).text(toMonthDay(date)).attr('transform', 'translate(' + width + ' , ' + height / 2.05 + ') rotate(90)');
+	});
+
+/***/ }),
+/* 153 */
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	exports.default = function (_ref) {
+	  var gEl = _ref.gEl,
+	      lineGen = _ref.lineGen,
+	      lineData = _ref.lineData;
+
+	  // grab the correct g element
+	  var pathEl = gEl.selectAll('path').data([lineData]);
+
+	  // Update existing line
+	  pathEl.attr('d', lineGen);
+
+	  // ENTER new line
+	  pathEl.enter().append('path').attr('d', lineGen);
+
+	  return gEl.selectAll('path');
+	};
+
+/***/ }),
+/* 154 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _d = __webpack_require__(28);
+
+	var lineGen = function lineGen(scales) {
+	  return (0, _d.area)().x(function (d) {
+	    return scales.x(d.x);
+	  }).y(function (d) {
+	    return scales.y(d.y);
+	  });
+	};
+
+	var areaGen = function areaGen(scales) {
+	  return (0, _d.area)().curve(d3.curveStepAfter).x(function (d) {
+	    return scales.x(d.x);
+	  }).y(function (d) {
+	    return scales.y(0);
+	  }).y1(function (d) {
+	    return scales.y(d.y);
+	  });
+	};
+
+	module.exports = { lineGen: lineGen, areaGen: areaGen };
+
+/***/ }),
+/* 155 */,
+/* 156 */
+/***/ (function(module, exports, __webpack_require__) {
+
+	'use strict';
+
 	var d3 = __webpack_require__(28);
 
-	var _require = __webpack_require__(152),
+	var _require = __webpack_require__(157),
 	    secondsToTime = _require.secondsToTime,
 	    timeFormat = _require.timeFormat,
 	    toMonthDay = _require.toMonthDay;
@@ -36277,7 +36433,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ }),
-/* 152 */
+/* 157 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -36311,13 +36467,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ }),
-/* 153 */
+/* 158 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var TagBrush = __webpack_require__(154);
-	var TagInput = __webpack_require__(155);
+	var TagBrush = __webpack_require__(159);
+	var TagInput = __webpack_require__(160);
 
 	/* Sets up a given days tag interface. Wraps an input and a d3 brush behavior and spits out new tags. */
 	var Tagger = function Tagger(config) {
@@ -36368,7 +36524,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = Tagger;
 
 /***/ }),
-/* 154 */
+/* 159 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -36432,7 +36588,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = TagBrush;
 
 /***/ }),
-/* 155 */
+/* 160 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -36443,9 +36599,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var d3 = _interopRequireWildcard(_d2);
 
-	var _timeHelpers = __webpack_require__(152);
+	var _timeHelpers = __webpack_require__(157);
 
-	var _addTag = __webpack_require__(156);
+	var _addTag = __webpack_require__(161);
 
 	var _addTag2 = _interopRequireDefault(_addTag);
 
@@ -36560,7 +36716,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = TagInput;
 
 /***/ }),
-/* 156 */
+/* 161 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -36573,15 +36729,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = addTag;
 
 /***/ }),
-/* 157 */
+/* 162 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _require = __webpack_require__(152),
+	var _require = __webpack_require__(157),
 	    secondsToTime = _require.secondsToTime;
 
-	var _require2 = __webpack_require__(151),
+	var _require2 = __webpack_require__(156),
 	    trans = _require2.trans;
 
 	/* Is supplied with a svg object and some config options and then exposes 
@@ -36668,20 +36824,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = TagViz;
 
 /***/ }),
-/* 158 */
+/* 163 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var _require = __webpack_require__(151),
+	var _require = __webpack_require__(156),
 	    setUpSVG = _require.setUpSVG,
 	    drawAxes = _require.drawAxes,
 	    makeLine = _require.makeLine,
 	    makeArea = _require.makeArea,
 	    writeDate = _require.writeDate;
 
-	var Tagger = __webpack_require__(153);
-	var TagViz = __webpack_require__(157);
+	var Tagger = __webpack_require__(158);
+	var TagViz = __webpack_require__(162);
 
 	// import addTag from './actions/addTag';
 
@@ -36828,14 +36984,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = SingleDay;
 
 /***/ }),
-/* 159 */
+/* 164 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var _rambda = __webpack_require__(27);
 
-	var _transition = __webpack_require__(160);
+	var _transition = __webpack_require__(165);
 
 	var _transition2 = _interopRequireDefault(_transition);
 
@@ -36920,7 +37076,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = TagLegend;
 
 /***/ }),
-/* 160 */
+/* 165 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -36938,14 +37094,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = trans;
 
 /***/ }),
-/* 161 */
+/* 166 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var d3 = __webpack_require__(28);
 
-	var _require = __webpack_require__(152),
+	var _require = __webpack_require__(157),
 	    secondsToTime = _require.secondsToTime;
 
 	var subsetData = function subsetData(_ref) {
@@ -36987,13 +37143,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ }),
-/* 162 */
+/* 167 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var d3 = __webpack_require__(28);
-	var dateToId = __webpack_require__(163);
+	var dateToId = __webpack_require__(168);
 
 	var makeDiv = function makeDiv(_ref) {
 	  var sel = _ref.sel,
@@ -37014,7 +37170,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = makeDiv;
 
 /***/ }),
-/* 163 */
+/* 168 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -37026,15 +37182,15 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 /***/ }),
-/* 164 */
+/* 169 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	module.exports = __webpack_require__(165);
+	module.exports = __webpack_require__(170);
 
 /***/ }),
-/* 165 */
+/* 170 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;"use strict";
@@ -37357,7 +37513,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	}();
 
 /***/ }),
-/* 166 */
+/* 171 */,
+/* 172 */,
+/* 173 */,
+/* 174 */,
+/* 175 */,
+/* 176 */,
+/* 177 */,
+/* 178 */,
+/* 179 */,
+/* 180 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -37365,119 +37530,19 @@ return /******/ (function(modules) { // webpackBootstrap
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-
-	var _rambda = __webpack_require__(27);
-
-	var _trySelect = __webpack_require__(150);
-
-	var _trySelect2 = _interopRequireDefault(_trySelect);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	exports.default = function (_ref) {
-	  var svg = _ref.svg,
-	      scales = _ref.scales,
-	      height = _ref.height;
-
-	  // Add the axes holders
-	  var tryG = (0, _trySelect2.default)(svg, 'g');
-
-	  // draw x-axis
-	  tryG('.x_axis').attr('transform', 'translate(0,0)').attr('transform', 'translate(0,' + height + ')').call(d3.axisBottom(scales.x).tickFormat(d3.timeFormat('%I %p')));
-
-	  // draw y-axis
-	  tryG('.y_axis').call(d3.axisLeft(scales.y).ticks(5));
-	};
-
-/***/ }),
-/* 167 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _rambda = __webpack_require__(27);
-
-	var _moment = __webpack_require__(30);
-
-	var _moment2 = _interopRequireDefault(_moment);
-
-	var _trySelect = __webpack_require__(150);
-
-	var _trySelect2 = _interopRequireDefault(_trySelect);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var toMonthDay = function toMonthDay(date) {
-	  return (0, _moment2.default)(date).format('MMM  DD');
-	};
-
-	exports.default = (0, _rambda.curry)(function (_ref, svg, date) {
-	  var width = _ref.width,
-	      height = _ref.height;
-
-	  var tryText = (0, _trySelect2.default)(svg, 'text');
-
-	  tryText('.current_date').attr('text-anchor', 'middle').attr('font-size', 20).text(toMonthDay(date)).attr('transform', 'translate(' + width + ' , ' + height / 2.05 + ') rotate(90)');
-	});
-
-/***/ }),
-/* 168 */
-/***/ (function(module, exports) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	exports.default = function (_ref) {
-	  var gEl = _ref.gEl,
-	      lineGen = _ref.lineGen,
-	      lineData = _ref.lineData;
-
-	  // grab the correct g element
-	  var pathEl = gEl.selectAll('path').data([lineData]);
-
-	  // Update existing line
-	  pathEl.attr('d', lineGen);
-
-	  // ENTER new line
-	  pathEl.enter().append('path').attr('d', lineGen);
-
-	  return gEl.selectAll('path');
-	};
-
-/***/ }),
-/* 169 */
-/***/ (function(module, exports, __webpack_require__) {
-
-	'use strict';
 
 	var _d = __webpack_require__(28);
 
-	var lineGen = function lineGen(scales) {
-	  return (0, _d.area)().x(function (d) {
-	    return scales.x(d.x);
-	  }).y(function (d) {
-	    return scales.y(d.y);
+	// takes a supplied date and will disable all brushes except the given dates.
+	exports.default = function (currentDate) {
+	  (0, _d.selectAll)('.brush').each(function () {
+	    var brushSel = (0, _d.select)(this);
+	    if (!brushSel.classed(currentDate)) {
+	      brushSel.select('.selection').style('display', 'none');
+	      brushSel.selectAll('.handle').style('display', 'none');
+	    }
 	  });
 	};
-
-	var areaGen = function areaGen(scales) {
-	  return (0, _d.area)().curve(d3.curveStepAfter).x(function (d) {
-	    return scales.x(d.x);
-	  }).y(function (d) {
-	    return scales.y(0);
-	  }).y1(function (d) {
-	    return scales.y(d.y);
-	  });
-	};
-
-	module.exports = { lineGen: lineGen, areaGen: areaGen };
 
 /***/ })
 /******/ ])

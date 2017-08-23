@@ -57,6 +57,16 @@ const VisualizeDays = (config) => {
   const legendGen = TagLegend({sel, fontFamily});
   legendGen(tagColors, tags);
 
+  // append a hidden div to act as our tagging interface.
+  sel
+    .append('div')
+    .attr('id', 'tagInput')
+    .style('width', 100)
+    .style('height', 100)
+    .style('border', '1px solid blue')
+    .style('display', 'none')
+    .style('position', 'absolute');
+
   const svg = sel.append('svg').attr('id', 'dayViz');
 
   // Sends tags both up to the caller of the function and also down to
@@ -113,7 +123,6 @@ const VisualizeDays = (config) => {
     const cWidth = width - margins.left - margins.right;
     const cHeight = dayHeight - margins.top - margins.bottom;
 
-    console.log('width', width);
     svg.style('height', groupedData.length * dayHeight).style('width', width);
 
     const dayChart = DayChart({
@@ -140,7 +149,7 @@ const VisualizeDays = (config) => {
           dayChart(d, this);
         });
       })
-      .merge(days) // merge with the updating elements too. 
+      .merge(days) // merge with the updating elements too.
       .attr(
         'transform',
         (d, i) => `translate(${margins.left}, ${margins.top + i * dayHeight})`
@@ -149,7 +158,6 @@ const VisualizeDays = (config) => {
     // Remove days no longer present
     days.exit().remove();
 
-    
     // // update the tags storage. If new tags argument is left blank we simply keep old tags.
     // tags = newTags ? newTags : tags;
     // // send message to all the days to update.
