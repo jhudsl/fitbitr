@@ -1,6 +1,6 @@
-// behavior once a tag is made.
-const addTag = (store, tag) => {
-  store.dispatch({type: 'ADD_TAG', tag});
-};
+import {curry} from 'rambda';
 
-module.exports = addTag;
+// behavior once a tag is made.
+export default curry((store, tag) => {
+  store.dispatch({type: 'ADD_TAG', tag});
+});

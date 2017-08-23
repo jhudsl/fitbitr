@@ -41,6 +41,7 @@ const TagInput = (config) => {
   // Wrap tagging in a form element to allow for enter to be used to submit a tag.
   const tagInput = tagForm
     .append('input')
+    .attr('id', 'tagLabel')
     .attr('type', 'text')
     .attr('name', 'activity_tag')
     .style('margin-top', '4px')

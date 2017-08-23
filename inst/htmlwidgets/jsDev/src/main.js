@@ -14,6 +14,9 @@ import subsetData from './dataFunctions/subsetData';
 import groupData from './dataFunctions/groupData';
 
 import DayChart from './DayChart';
+import makeTagInput from './chartFunctions/makeTagInput';
+
+import addTagAction from './actions/addTag';
 
 /* Takes multiple day's worth of data and spins out a day viz for each along with
 *  some tagging logic to go with it.
@@ -34,6 +37,9 @@ const VisualizeDays = (config) => {
   store.subscribe(() =>
     console.log('running subscribed function!', store.getState())
   );
+
+  // function that when called will dispatch an action to the 
+  const addTag = addTagAction(store);
 
   const sel = d3.select(domTarget);
 
@@ -57,16 +63,9 @@ const VisualizeDays = (config) => {
   const legendGen = TagLegend({sel, fontFamily});
   legendGen(tagColors, tags);
 
-  // append a hidden div to act as our tagging interface.
-  sel
-    .append('div')
-    .attr('id', 'tagInput')
-    .style('width', 100)
-    .style('height', 100)
-    .style('border', '1px solid blue')
-    .style('display', 'none')
-    .style('position', 'absolute');
-
+  // // append a hidden div to act as our tagging interface.
+  makeTagInput(sel);
+  
   const svg = sel.append('svg').attr('id', 'dayViz');
 
   // Sends tags both up to the caller of the function and also down to
@@ -130,7 +129,7 @@ const VisualizeDays = (config) => {
       scalesGen,
       height: cHeight,
       width: cWidth,
-      store,
+      addTag,
     });
 
     const days = svg.selectAll('.dayViz').data(groupedData, (d) => d.date);

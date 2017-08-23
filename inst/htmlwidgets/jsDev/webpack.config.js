@@ -5,6 +5,7 @@ module.exports = {
     libraryTarget: 'umd',
     filename: 'demo/tagViz.js',
   },
+  devtool: 'eval-source-map',
   module: {
     loaders: [
       {

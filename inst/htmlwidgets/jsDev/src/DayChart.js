@@ -1,7 +1,7 @@
 import {curry} from 'rambda';
 import * as d3 from 'd3';
 
-const {setUpSVG, makeLine, makeArea} = require('./chartHelpers');
+// const {setUpSVG, makeLine, makeArea} = require('./chartHelpers');
 
 const Tagger = require('./Tagger/Tagger');
 const TagViz = require('./tagViz');
@@ -12,6 +12,7 @@ import writeDate from './chartFunctions/writeDate';
 import drawLine from './chartFunctions/drawLine';
 import {lineGen, areaGen} from './chartFunctions/lineGenerators';
 import disableBrushes from './chartFunctions/disableBrushes';
+import editTagInput from './chartFunctions/editTagInput';
 
 // import addTag from './actions/addTag';
 
@@ -33,7 +34,7 @@ export default curry((config, {date, data}, selection) => {
     scalesGen,
     height,
     width,
-    store,
+    addTag,
     lineThickness = 1,
     hrColor = '#8da0cb',
     stepsColor = '#66c2a5',
@@ -42,6 +43,7 @@ export default curry((config, {date, data}, selection) => {
 
   // console.log('config', config);
   // console.log('data', data);
+
   const svg = d3.select(selection);
   let scales = scalesGen(height, width);
   const hrData = dataSubsetter('heart rate', data);
@@ -72,24 +74,17 @@ export default curry((config, {date, data}, selection) => {
     .style('fill', stepsColor)
     .style('fill-opacity', 0.5);
 
-  const tagInput = d3.select('#tagInput');
+
+  const moveInput = editTagInput({type:'move', date, addTag});
 
   const onBrush = function() {
-    const [start, end] = d3.event.selection;
-    const {pageX, pageY} = d3.event.sourceEvent;
-
+    const rangeInSeconds = d3.event.selection.map((pos) => scales.toSeconds(pos))
+    
     // kill all the brushes on other dates
     disableBrushes(date);
     
     // move input
-    tagInput
-      .style('display', 'block')
-      .style('left', pageX + 'px')
-      .style('top', pageY - 28 + 'px')
-      .text('hiyo');
-
-    console.log(d3.event);
-    // console.log('brushing from ', date);
+    moveInput(rangeInSeconds, d3.event.sourceEvent);
   };
 
   const brush = d3
@@ -97,20 +92,8 @@ export default curry((config, {date, data}, selection) => {
     .extent([[0, 0], [width, height]])
     .on('start brush end', onBrush);
 
-  const brushG = svg.append('g').attr('class', 'brush ' + date).call(brush);
+  svg.append('g').attr('class', 'brush ' + date).call(brush);
 
-  // // set up a tagging system for this day
-  // const tagger = Tagger({
-  //   svg,
-  //   sel,
-  //   date,
-  //   width: vizWidth,
-  //   height: vizHeight,
-  //   scales,
-  //   store,
-  //   onTag,
-  //   fontFamily,
-  // });
 
   // // Now the tag visualization
   // const tagViz = TagViz({
