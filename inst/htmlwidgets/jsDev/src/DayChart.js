@@ -36,10 +36,9 @@ export default curry((config, {date, data, tags}, selection) => {
     addTag,
     deleteTag,
     tagColors,
-    lineThickness = 1,
-    hrColor = '#8da0cb',
-    stepsColor = '#66c2a5',
-    fontFamily = 'avenir',
+    lineThickness = 1.25,
+    hrColor = '#d95f02',
+    stepsColor = '#1b9e77',
   } = config;
 
 
