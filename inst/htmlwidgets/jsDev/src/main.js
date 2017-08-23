@@ -55,14 +55,9 @@ const VisualizeDays = (config) => {
 
   const svg = sel.append('svg').attr('id', 'dayViz');
 
-  // window.addEventListener('resize', () => {
-  //   resize();
-  // });
-
   // behavior when we get new data from the server.
   const renderViz = (data, tags, tagColors) => {
     const groupedData = groupData(data);
-    console.log(groupedData)
     const groupedWithTags = groupTags(groupedData, tags);
     const cWidth = width - margins.left - margins.right;
     const cHeight = dayHeight - margins.top - margins.bottom;
@@ -114,16 +109,17 @@ const VisualizeDays = (config) => {
     addData(data);
   };
 
-  const rerender = () => {
+  const rerender = (resize = false) => {
     disableBrushes(''); // kill and brushes that may be open.
     const {data, tags, tagColors} = store.getState();
+    if (resize) renderViz(data, [], tagColors);
     renderViz(data, tags, tagColors);
   };
 
   const resize = (newWidth, newHeight = dayHeight) => {
     width = newWidth;
     dayHeight = newHeight;
-    rerender();
+    rerender(true);
   };
 
   store.subscribe(() => {

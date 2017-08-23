@@ -15,8 +15,14 @@ export default (config, tags) => {
 
   const tagBars = trySelect(svg, 'g', '.tagsContainer')
     .selectAll('rect')
-    .data(tags, (t) => t);
+    .data(tags, (t) => `${t.start.toString()}-${t.date}`);
 
+  // Update bars
+  // tagBars
+  //   .attr('transform', `translate(0,0)`)
+  //   .attr('transform', (d) => `translate(${secToPlot(d.start)},0)`);
+
+  // Add new bars
   tagBars
     .enter()
     .append('g')
@@ -24,17 +30,22 @@ export default (config, tags) => {
     .attr('transform', (d) => `translate(${secToPlot(d.start)},0)`)
     .on('mouseenter', onMouseover)
     .on('mouseleave', onMouseout)
-    .append('rect')
-    .attr('class', 'tag_bar')
-    .style('fill-opacity', '0.5')
-    .attr('y', height)
-    .attr('rx', barThickness * 0.5)
-    .attr('ry', barThickness * 0.5)
-    .attr('height', barThickness)
-    .attr('width', 1e-6)
-    .style('fill', (d) => tagColors[d.tag])
-    .transition(trans('barEnter', 500))
-    .attr('width', (d) => secToPlot(d.end) - secToPlot(d.start));
+    .each(function(d) {
+      console.log('drawing new tag for ', d)
+      d3
+        .select(this)
+        .append('rect')
+        .attr('class', 'tag_bar')
+        .style('fill-opacity', '0.5')
+        .attr('y', height)
+        .attr('rx', barThickness * 0.5)
+        .attr('ry', barThickness * 0.5)
+        .attr('height', barThickness)
+        .attr('width', 1e-6)
+        .style('fill', (d) => tagColors[d.tag])
+        .transition(trans('barEnter', 500))
+        .attr('width', (d) => secToPlot(d.end) - secToPlot(d.start));
+    });
 
   // //Remove days no longer present
   tagBars.exit().remove();
