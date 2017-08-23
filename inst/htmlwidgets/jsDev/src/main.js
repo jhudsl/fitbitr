@@ -12,11 +12,15 @@ import mainReducer from './reducers/index';
 import makeScales from './chartFunctions/makeScales';
 import subsetData from './dataFunctions/subsetData';
 import groupData from './dataFunctions/groupData';
+import groupTags from './dataFunctions/groupTags';
 
 import DayChart from './DayChart';
 import makeTagInput from './chartFunctions/makeTagInput';
+import disableBrushes from './chartFunctions/disableBrushes';
 
 import addTagAction from './actions/addTag';
+import deleteTagAction from './actions/deleteTag';
+import addDataAction from './actions/addData';
 
 /* Takes multiple day's worth of data and spins out a day viz for each along with
 *  some tagging logic to go with it.
@@ -34,13 +38,12 @@ const VisualizeDays = (config) => {
 
   // Set up store;
   const store = createStore(mainReducer);
-  store.subscribe(() =>
-    console.log('running subscribed function!', store.getState())
-  );
 
-  // function that when called will dispatch an action to the 
+  //// Setting up action emmiters ///////
   const addTag = addTagAction(store);
-
+  const deleteTag = deleteTagAction(store);
+  const addData = addDataAction(store);
+  
   const sel = d3.select(domTarget);
 
   const colorScale = colors[9];
@@ -65,7 +68,7 @@ const VisualizeDays = (config) => {
 
   // // append a hidden div to act as our tagging interface.
   makeTagInput(sel);
-  
+
   const svg = sel.append('svg').attr('id', 'dayViz');
 
   // Sends tags both up to the caller of the function and also down to
@@ -81,48 +84,20 @@ const VisualizeDays = (config) => {
     tagMessage(tags, tagColors);
   };
 
-  // behavior once a tag is made.
-  const onTag = (tag) => {
-    const tagName = tag.tag;
-
-    // have we seen this tag before?
-    const tagSeen = tagColors.hasOwnProperty(tagName);
-
-    // if the tag is new lets assign it a color!
-    if (!tagSeen) {
-      tagColors[tagName] = colorScale.shift();
-    }
-
-    // assign a color to the tag
-    tag.color = tagColors[tagName];
-
-    // push it to the big tags list.
-    tags.push(tag);
-
-    // Send updates down to vis and up to caller.
-    sendTags(tagName);
-  };
-
-  // when user deletes a tag.
-  const onTagDelete = (tag) => {
-    // remove the deleted tag from array of tags
-    tags = tags.filter((t) => t !== tag);
-
-    // Send updates down to vis and up to caller.
-    sendTags();
-  };
-
   // window.addEventListener('resize', () => {
   //   resize();
   // });
 
   // behavior when we get new data from the server.
-  const newData = (data, newTags) => {
+  const renderViz = (data, tags = []) => {
     const groupedData = groupData(data);
+    const groupedWithTags = groupTags(groupedData, tags);
     const cWidth = width - margins.left - margins.right;
     const cHeight = dayHeight - margins.top - margins.bottom;
 
-    svg.style('height', groupedData.length * dayHeight).style('width', width);
+    svg
+      .style('height', groupedWithTags.length * dayHeight)
+      .style('width', width);
 
     const dayChart = DayChart({
       dataSubsetter,
@@ -130,9 +105,10 @@ const VisualizeDays = (config) => {
       height: cHeight,
       width: cWidth,
       addTag,
+      deleteTag,
     });
 
-    const days = svg.selectAll('.dayViz').data(groupedData, (d) => d.date);
+    const days = svg.selectAll('.dayViz').data(groupedWithTags, (d) => d.date);
 
     // ENTER new days
     days
@@ -142,29 +118,37 @@ const VisualizeDays = (config) => {
       .attr('id', (d) => dateToId(d.date))
       .attr('width', width)
       .attr('height', dayHeight)
+      .merge(days) // merge with the updating elements too.
+      .attr(
+        'transform',
+        (d, i) => `translate(${margins.left}, ${margins.top + i * dayHeight})`
+      )
       .call(function(selection) {
         selection.each(function(d, i) {
           // generate chart here; `d` is the data and `this` is the element
           dayChart(d, this);
         });
-      })
-      .merge(days) // merge with the updating elements too.
-      .attr(
-        'transform',
-        (d, i) => `translate(${margins.left}, ${margins.top + i * dayHeight})`
-      );
+      });
 
     // Remove days no longer present
     days.exit().remove();
-
-    // // update the tags storage. If new tags argument is left blank we simply keep old tags.
-    // tags = newTags ? newTags : tags;
-    // // send message to all the days to update.
-    // sendTags();
+    
   };
 
+  // when new data is sent to the vis send action to redux store to add it. 
+  const newData = (data) => {
+    addData(data);
+  };
+
+  store.subscribe(() => {
+    
+    disableBrushes(''); // kill and brushes that may be open. 
+    console.log('running subscribe function');
+    const {data, tags} = store.getState();
+    renderViz(data, tags);
+  });
+
   return {
-    // resize,
     newData,
   };
 };

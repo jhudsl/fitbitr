@@ -1,4 +1,5 @@
 export default (data) => {
+  
   const grouped = data.reduce((grouped, current) => {
     // check if current date is already in key
     const dateSeen = grouped.hasOwnProperty(current.date);

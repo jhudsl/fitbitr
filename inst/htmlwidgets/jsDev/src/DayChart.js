@@ -1,18 +1,18 @@
 import {curry} from 'rambda';
 import * as d3 from 'd3';
 
-// const {setUpSVG, makeLine, makeArea} = require('./chartHelpers');
-
-const Tagger = require('./Tagger/Tagger');
-const TagViz = require('./tagViz');
 
 import trySelect from './chartFunctions/trySelect';
 import drawAxes from './chartFunctions/drawAxes';
 import writeDate from './chartFunctions/writeDate';
 import drawLine from './chartFunctions/drawLine';
+import drawTags from './chartFunctions/drawTags';
 import {lineGen, areaGen} from './chartFunctions/lineGenerators';
 import disableBrushes from './chartFunctions/disableBrushes';
 import editTagInput from './chartFunctions/editTagInput';
+import resetBrushes from './chartFunctions/resetBrushes';
+
+const hideInput = () => d3.select('#tagInput').style('display', 'none');
 
 // import addTag from './actions/addTag';
 
@@ -28,21 +28,23 @@ import editTagInput from './chartFunctions/editTagInput';
  * @param {String} [stepsColor = '#66c2a5'] - Hex code for steps bar color.
  * @param {String} [fontFamily = 'avenir'] - Valid css name for a font for axes. 
 */
-export default curry((config, {date, data}, selection) => {
+export default curry((config, {date, data, tags}, selection) => {
   const {
     dataSubsetter,
     scalesGen,
     height,
     width,
     addTag,
+    deleteTag,
     lineThickness = 1,
     hrColor = '#8da0cb',
     stepsColor = '#66c2a5',
     fontFamily = 'avenir',
   } = config;
 
+  console.log('renderviz ran');
   // console.log('config', config);
-  // console.log('data', data);
+  // console.log('data', data, tags);
 
   const svg = d3.select(selection);
   let scales = scalesGen(height, width);
@@ -57,7 +59,8 @@ export default curry((config, {date, data}, selection) => {
   drawAxes({svg, scales, height});
   writeDate({width, height}, svg, date);
 
-  const hrLine = drawLine({
+  // HR line
+  drawLine({
     gEl: hrG,
     lineGen: lineGen(scales),
     lineData: hrData,
@@ -66,7 +69,8 @@ export default curry((config, {date, data}, selection) => {
     .style('stroke-width', lineThickness)
     .style('fill', 'none');
 
-  const stepsLine = drawLine({
+  // steps line
+  drawLine({
     gEl: stepsG,
     lineGen: areaGen(scales),
     lineData: stepsData,
@@ -74,26 +78,48 @@ export default curry((config, {date, data}, selection) => {
     .style('fill', stepsColor)
     .style('fill-opacity', 0.5);
 
-
-  const moveInput = editTagInput({type:'move', date, addTag});
-
   const onBrush = function() {
-    const rangeInSeconds = d3.event.selection.map((pos) => scales.toSeconds(pos))
-    
-    // kill all the brushes on other dates
-    disableBrushes(date);
-    
-    // move input
-    moveInput(rangeInSeconds, d3.event.sourceEvent);
+    try {
+      const rangeInSeconds = d3.event.selection.map((pos) =>
+        scales.toSeconds(pos)
+      );
+
+      // kill all the brushes on other dates
+      disableBrushes(date);
+
+      // move input
+      moveInput(rangeInSeconds, d3.event.sourceEvent);
+    } catch (e) {
+      hideInput();
+    }
   };
 
+  const brushG = svg.append('g').attr('class', 'brush ' + date);
   const brush = d3
     .brushX()
     .extent([[0, 0], [width, height]])
     .on('start brush end', onBrush);
 
-  svg.append('g').attr('class', 'brush ' + date).call(brush);
+  const brushReset = resetBrushes(brushG, brush);
 
+  brushG.call(brush);
+
+  const onTagDelete = (tag) => {
+    console.log('deleting', tag);
+    deleteTag(tag);
+    hideInput();
+    brushReset();
+  };
+
+  drawTags({svg, scales, height, onTagDelete}, tags);
+
+  const moveInput = editTagInput({
+    type: 'move',
+    date,
+    addTag,
+    hideInput,
+    brushReset,
+  });
 
   // // Now the tag visualization
   // const tagViz = TagViz({
