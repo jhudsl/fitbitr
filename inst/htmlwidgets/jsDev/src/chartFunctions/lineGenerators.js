@@ -1,6 +1,8 @@
-import {area} from 'd3';
+import {area, line} from 'd3';
 
-const lineGen = (scales) => area().x((d) => scales.x(d.x)).y((d) => scales.y(d.y));
+const lineGen = (scales) => line()
+  .x((d) => scales.x(d.x))
+  .y((d) => scales.y(d.y));
 
 const areaGen = (scales) =>
   area()

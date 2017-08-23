@@ -120,7 +120,7 @@ const VisualizeDays = (config) => {
     renderViz(data, tags, tagColors);
   };
 
-  const resize = (newWidth, newHeight) => {
+  const resize = (newWidth, newHeight = dayHeight) => {
     width = newWidth;
     dayHeight = newHeight;
     rerender();

@@ -42,6 +42,8 @@ export default curry((config, {date, data, tags}, selection) => {
     fontFamily = 'avenir',
   } = config;
 
+  console.log('rendering with width', width)
+
   const svg = d3.select(selection);
   let scales = scalesGen(height, width);
   const hrData = dataSubsetter('heart rate', data);
@@ -56,6 +58,9 @@ export default curry((config, {date, data, tags}, selection) => {
   writeDate({width, height}, svg, date);
 
   // HR line
+  console.log('drawing a new heartrate line for', date)
+  console.log('data being used is', hrData)
+  
   drawLine({
     gEl: hrG,
     lineGen: lineGen(scales),
