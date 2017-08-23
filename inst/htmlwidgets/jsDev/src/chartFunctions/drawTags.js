@@ -9,7 +9,7 @@ const barThickness = 20;
  *  a way of plotting tagged events when supplied with an array of tags. 
  */
 export default (config, tags) => {
-  const {svg, scales, height, onTagDelete} = config;
+  const {svg, scales, height, onTagDelete, tagColors} = config;
 
   const secToPlot = (secs) => scales.x(secondsToTime(secs));
 
@@ -32,13 +32,9 @@ export default (config, tags) => {
     .attr('ry', barThickness * 0.5)
     .attr('height', barThickness)
     .attr('width', 1e-6)
-    .style('fill', (d) => 'blue')
+    .style('fill', (d) => tagColors[d.tag])
     .transition(trans('barEnter', 500))
     .attr('width', (d) => secToPlot(d.end) - secToPlot(d.start));
-  // .merge(tagBars) // merge with the updating elements too.
-  // // .attr()
-  // .style('fill', (d) => 'blue')
-  // .attr('width', (d) => secToPlot(d.end) - secToPlot(d.start));
 
   // //Remove days no longer present
   tagBars.exit().remove();

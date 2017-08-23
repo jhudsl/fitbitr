@@ -3,7 +3,7 @@ export default ({gEl, lineGen, lineData}) => {
   const pathEl = gEl.selectAll('path').data([lineData]);
 
   // Update existing line
-  pathEl.attr('d', lineGen);
+  // pathEl.attr('d', lineGen);
 
   // ENTER new line
   pathEl

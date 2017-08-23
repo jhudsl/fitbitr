@@ -3,13 +3,17 @@ import * as d3 from 'd3';
 import {getTimeOfDay} from '../timeHelpers';
 
 export default curry(
-  ({type, date, addTag, hideInput, brushReset}, [start, end], {pageX, pageY}) => {
+  (
+    {type, date, addTag, hideInput, brushReset},
+    [start, end],
+    {pageX, pageY}
+  ) => {
     const tagBody = d3.select('#tagInput');
 
     // Main container div for all selection.
     if (type === 'hide') {
-      console.log('hiding')
       tagBody.style('display', 'none');
+      return;
     }
 
     tagBody

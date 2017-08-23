@@ -2,7 +2,6 @@ import {select, selectAll} from 'd3';
 
 // takes a supplied date and will disable all brushes except the given dates.
 export default (currentDate = '') => {
-  console.log('disabling brushes omiting', currentDate)
   selectAll('.brush').each(function() {
     const brushSel = select(this);
     if (!brushSel.classed(currentDate)) {

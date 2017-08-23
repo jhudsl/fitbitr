@@ -1,7 +1,6 @@
 import {curry} from 'rambda';
 import * as d3 from 'd3';
 
-
 import trySelect from './chartFunctions/trySelect';
 import drawAxes from './chartFunctions/drawAxes';
 import writeDate from './chartFunctions/writeDate';
@@ -36,15 +35,12 @@ export default curry((config, {date, data, tags}, selection) => {
     width,
     addTag,
     deleteTag,
+    tagColors,
     lineThickness = 1,
     hrColor = '#8da0cb',
     stepsColor = '#66c2a5',
     fontFamily = 'avenir',
   } = config;
-
-  console.log('renderviz ran');
-  // console.log('config', config);
-  // console.log('data', data, tags);
 
   const svg = d3.select(selection);
   let scales = scalesGen(height, width);
@@ -111,7 +107,7 @@ export default curry((config, {date, data, tags}, selection) => {
     brushReset();
   };
 
-  drawTags({svg, scales, height, onTagDelete}, tags);
+  drawTags({svg, scales, height, onTagDelete, tagColors}, tags);
 
   const moveInput = editTagInput({
     type: 'move',
@@ -120,36 +116,4 @@ export default curry((config, {date, data, tags}, selection) => {
     hideInput,
     brushReset,
   });
-
-  // // Now the tag visualization
-  // const tagViz = TagViz({
-  //   svg,
-  //   scales,
-  //   height: vizHeight,
-  //   onTagDelete,
-  // });
-
-  // /** Gets new tags and visualizes them */
-  // const updateTags = ({tags, lastTag}) => {
-  //   // filter tags to this day
-  //   daysTags = tags.filter((tag) => tag.date === date);
-  //   tagViz.draw(daysTags);
-  //   tagger.changePlaceHolder(lastTag);
-  // };
-
-  // const resize = ({width, height}) => {
-  //   // update svg
-  //   resizeSvg({width, height});
-  //   // update scales
-  //   scales = scalesGen(height, width);
-  //   // update axes
-  //   axes.update({scales, height});
-  //   // update date
-  //   dateLabel.update({width, height});
-  //   // update lines
-  //   drawHeartRate(makeLine(scales));
-  //   drawSteps(makeArea(scales));
-  //   // update tags
-  //   tagViz.draw(daysTags);
-  // };
 });

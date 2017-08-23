@@ -1,9 +1,4 @@
-const SingleDay = require('./SingleDay');
 const TagLegend = require('./Tagger/TagLegend');
-const {groupByDate} = require('./dataHelpers');
-
-const makeDiv = require('./chartFunctions/makeDiv');
-const {Set1: colors} = require('colorbrewer');
 const dateToId = require('./chartFunctions/dateToId');
 
 import {createStore} from 'redux';
@@ -28,33 +23,22 @@ import addDataAction from './actions/addData';
 const VisualizeDays = (config) => {
   const {
     domTarget,
-    tagMessage,
-    dayHeight = 200,
-    width = d3.select(domTarget).style('width'),
     yMax = 200,
     margins = {left: 40, right: 80, top: 60, bottom: 30},
     fontFamily = 'optima',
   } = config;
 
+  let {dayHeight = 200, width = d3.select(domTarget).style('width')} = config;
+
   // Set up store;
   const store = createStore(mainReducer);
 
-  //// Setting up action emmiters ///////
+  // // Setting up action emmiters ///////
   const addTag = addTagAction(store);
   const deleteTag = deleteTagAction(store);
   const addData = addDataAction(store);
-  
+
   const sel = d3.select(domTarget);
-
-  const colorScale = colors[9];
-
-  let dayPlots = {};
-
-  // stores all the users tags [{tag, date, start, end}, ...]
-  let tags = [];
-
-  // Object to relate a tag to a color for plotting.
-  let tagColors = {};
 
   // set up function to generate a common set of scales for all the days.
   const scalesGen = makeScales(yMax);
@@ -64,36 +48,26 @@ const VisualizeDays = (config) => {
 
   // set up legend with the standard defaults and then call it.
   const legendGen = TagLegend({sel, fontFamily});
-  legendGen(tagColors, tags);
+  legendGen({}, []);
 
   // // append a hidden div to act as our tagging interface.
   makeTagInput(sel);
 
   const svg = sel.append('svg').attr('id', 'dayViz');
 
-  // Sends tags both up to the caller of the function and also down to
-  // each day's individual viz.
-  const sendTags = (lastTag = '') => {
-    // update the tag legend
-    legendGen(tagColors, tags);
-    // send all tags to each day's visualization
-    Object.keys(dayPlots).forEach((day) =>
-      dayPlots[day].updateTags({tags, lastTag})
-    );
-    // send new tag info up to shiny or wherever calling this function.
-    tagMessage(tags, tagColors);
-  };
-
   // window.addEventListener('resize', () => {
   //   resize();
   // });
 
   // behavior when we get new data from the server.
-  const renderViz = (data, tags = []) => {
+  const renderViz = (data, tags, tagColors) => {
     const groupedData = groupData(data);
+    console.log(groupedData)
     const groupedWithTags = groupTags(groupedData, tags);
     const cWidth = width - margins.left - margins.right;
     const cHeight = dayHeight - margins.top - margins.bottom;
+
+    legendGen(tagColors, tags);
 
     svg
       .style('height', groupedWithTags.length * dayHeight)
@@ -106,6 +80,7 @@ const VisualizeDays = (config) => {
       width: cWidth,
       addTag,
       deleteTag,
+      tagColors,
     });
 
     const days = svg.selectAll('.dayViz').data(groupedWithTags, (d) => d.date);
@@ -132,24 +107,32 @@ const VisualizeDays = (config) => {
 
     // Remove days no longer present
     days.exit().remove();
-    
   };
 
-  // when new data is sent to the vis send action to redux store to add it. 
+  // when new data is sent to the vis send action to redux store to add it.
   const newData = (data) => {
     addData(data);
   };
 
+  const rerender = () => {
+    disableBrushes(''); // kill and brushes that may be open.
+    const {data, tags, tagColors} = store.getState();
+    renderViz(data, tags, tagColors);
+  };
+
+  const resize = (newWidth, newHeight) => {
+    width = newWidth;
+    dayHeight = newHeight;
+    rerender();
+  };
+
   store.subscribe(() => {
-    
-    disableBrushes(''); // kill and brushes that may be open. 
-    console.log('running subscribe function');
-    const {data, tags} = store.getState();
-    renderViz(data, tags);
+    rerender();
   });
 
   return {
     newData,
+    resize,
   };
 };
 

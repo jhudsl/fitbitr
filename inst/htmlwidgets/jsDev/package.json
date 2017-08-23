@@ -11,6 +11,7 @@
   "author": "Nick Strayer <nick.strayer@gmail.com> (http://nickstrayer.me)",
   "license": "MIT",
   "dependencies": {
+    "babel-plugin-transform-object-rest-spread": "6.26.0",
     "colorbrewer": "1.0.0",
     "d3": "^4.9.1",
     "d3-brush": "1.0.4",
