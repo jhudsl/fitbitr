@@ -1,5 +1,4 @@
 import {curry} from 'rambda';
-import * as d3 from 'd3';
 import {getTimeOfDay} from '../timeHelpers';
 
 export default curry(

@@ -6,14 +6,10 @@ export default ({gEl, lineGen, lineData}) => {
   pathEl.attr('d', lineGen);
 
   // ENTER new line
-  pathEl
-    .enter()
-    .append('path')
-    .attr('d', lineGen);
+  pathEl.enter().append('path').attr('d', lineGen);
 
   // Exit old
   pathEl.exit().remove();
-  
 
   return gEl.selectAll('path');
 };

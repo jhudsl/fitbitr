@@ -1,5 +1,5 @@
-const TagLegend = require('./Tagger/TagLegend');
-const dateToId = require('./chartFunctions/dateToId');
+import TagLegend from './Tagger/TagLegend';
+import dateToId from './chartFunctions/dateToId';
 
 import {createStore} from 'redux';
 import mainReducer from './reducers/index';
@@ -28,6 +28,8 @@ const VisualizeDays = (config) => {
     fontFamily = 'optima',
     tagMessage,
   } = config;
+
+  console.log('hi');
 
   let {dayHeight = 200, width = d3.select(domTarget).style('width')} = config;
 
