@@ -1,5 +1,6 @@
-const d3 = require('d3');
-const {getTimeOfDay} = require('../timeHelpers');
+import * as d3 from 'd3';
+import {getTimeOfDay} from '../timeHelpers';
+import addTag from '../actions/addTag';
 
 /* Main Func */
 const TagInput = (config) => {
@@ -10,6 +11,7 @@ const TagInput = (config) => {
     date,
     onTag,
     fontFamily,
+    store,
   } = config;
 
   // Variable to store the time ranges for selections. In seconds into day.
@@ -39,6 +41,7 @@ const TagInput = (config) => {
   // Wrap tagging in a form element to allow for enter to be used to submit a tag.
   const tagInput = tagForm
     .append('input')
+    .attr('id', 'tagLabel')
     .attr('type', 'text')
     .attr('name', 'activity_tag')
     .style('margin-top', '4px')
@@ -72,6 +75,13 @@ const TagInput = (config) => {
     }
     // pass info to whatever tagging callback we have.
     onTag({
+      tag,
+      date,
+      start: timeRange[0],
+      end: timeRange[1],
+    });
+
+    addTag(store, {
       tag,
       date,
       start: timeRange[0],

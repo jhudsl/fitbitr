@@ -1,0 +1,15 @@
+body {
+  font-family: 'avenir';
+}
+
+svg {
+  overflow: visible;
+}
+
+svg text {
+  font-family: 'avenir';
+}
+
+.axis {
+  opacity: .5;
+}
