@@ -1,3 +1,5 @@
+// var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+
 module.exports = {
   entry: './src/main.js',
   output: {
@@ -6,6 +8,7 @@ module.exports = {
     filename: 'demo/tagViz.js',
   },
   devtool: 'source-map',
+  // plugins: [new BundleAnalyzerPlugin()],
   module: {
     rules: [
       {

@@ -1,6 +1,4 @@
-import moment from 'moment';
-
-const SToDate = (d) => moment(d).toDate();
+import stringToDate from '../timeHelpers/stringToDate';
 
 export default (data) => {
   const grouped = data.reduce((grouped, current) => {
@@ -22,5 +20,5 @@ export default (data) => {
       date: day,
       data: grouped[day],
     }))
-    .sort((a, b) => SToDate(b.date) - SToDate(a.date));
+    .sort((a, b) => stringToDate(b.date) - stringToDate(a.date));
 };

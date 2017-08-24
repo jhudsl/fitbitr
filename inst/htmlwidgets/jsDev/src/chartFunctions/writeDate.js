@@ -1,9 +1,7 @@
 import {curry} from 'rambda';
-import moment from 'moment';
 
 import trySelect from './trySelect';
-
-const toMonthDay = (date) => moment(date).format('ddd MM/DD');
+import toMonthDay from '../timeHelpers/toMonthDay';
 
 export default curry(({width, height}, svg, date) => {
   const tryText = trySelect(svg, 'text');

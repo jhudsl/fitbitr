@@ -1,5 +1,5 @@
 import {curry} from 'rambda';
-import {getTimeOfDay} from '../timeHelpers';
+import getTimeOfDay from '../timeHelpers/getTimeOfDay';
 
 export default curry(
   (

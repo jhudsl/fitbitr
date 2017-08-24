@@ -1,22 +1,20 @@
-import TagLegend from './Tagger/TagLegend';
 import dateToId from './chartFunctions/dateToId';
-
-import {createStore} from 'redux';
-import mainReducer from './reducers/index';
-
 import makeScales from './chartFunctions/makeScales';
 import subsetData from './dataFunctions/subsetData';
 import groupData from './dataFunctions/groupData';
 import groupTags from './dataFunctions/groupTags';
-
-import DayChart from './DayChart';
 import makeTagInput from './chartFunctions/makeTagInput';
 import disableBrushes from './chartFunctions/disableBrushes';
 
+// actions and reducers
 import addTagAction from './actions/addTag';
 import deleteTagAction from './actions/deleteTag';
 import addDataAction from './actions/addData';
+import {createStore} from 'redux';
+import mainReducer from './reducers/index';
 
+import TagLegend from './Tagger/TagLegend';
+import DayChart from './DayChart';
 /* Takes multiple day's worth of data and spins out a day viz for each along with
 *  some tagging logic to go with it.
 */
@@ -28,8 +26,6 @@ const VisualizeDays = (config) => {
     fontFamily = 'optima',
     tagMessage,
   } = config;
-
-  console.log('hi');
 
   let {dayHeight = 200, width = d3.select(domTarget).style('width')} = config;
 
