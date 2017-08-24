@@ -1,4 +1,3 @@
-import * as d3 from 'd3';
 import groupTags from './groupTags';
 import groupData from './groupData';
 

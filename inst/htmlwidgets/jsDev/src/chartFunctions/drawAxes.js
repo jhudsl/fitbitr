@@ -1,5 +1,3 @@
-import {curry} from 'rambda';
-
 import trySelect from './trySelect';
 
 export default ({svg, scales, height}) => {

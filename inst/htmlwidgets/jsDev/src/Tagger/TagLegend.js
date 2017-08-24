@@ -15,7 +15,7 @@ const TagLegend = curry((config, tagColors, tags) => {
   const noLegend = sel.select('#tagLegend').empty();
 
   const tryDiv = trySelect(sel, 'div');
-  
+
   const el = tryDiv('#tagLegend').style('font-family', fontFamily);
 
   // a few setup things that only need to be run if this is the first time the legend is being drawn.
@@ -29,7 +29,7 @@ const TagLegend = curry((config, tagColors, tags) => {
   }
 
   // set up flex box environment for parent div
-  const legendHolder =  trySelect(el, 'div', '.legend_holder')
+  const legendHolder = trySelect(el, 'div', '.legend_holder')
     .style('display', 'flex')
     .style('flex-wrap', 'wrap');
 

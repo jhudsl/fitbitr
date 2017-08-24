@@ -1,15 +1,8 @@
 import moment from 'moment';
 
-// function sortByDateAscending(a, b) {
-//   // Dates will be cast to numbers automagically:
-//   return a.date - b.date;
-// }
-
-// data = data.sort(sortByDateAscending);
 const SToDate = (d) => moment(d).toDate();
 
 export default (data) => {
-  
   const grouped = data.reduce((grouped, current) => {
     // check if current date is already in key
     const dateSeen = grouped.hasOwnProperty(current.date);
@@ -24,8 +17,10 @@ export default (data) => {
     return grouped;
   }, {});
 
-  return Object.keys(grouped).map((day) => ({
-    date: day,
-    data: grouped[day],
-  })).sort((a, b) => SToDate(b.date) - SToDate(a.date));
+  return Object.keys(grouped)
+    .map((day) => ({
+      date: day,
+      data: grouped[day],
+    }))
+    .sort((a, b) => SToDate(b.date) - SToDate(a.date));
 };
