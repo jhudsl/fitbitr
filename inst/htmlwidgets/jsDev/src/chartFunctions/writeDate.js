@@ -3,7 +3,7 @@ import moment from 'moment';
 
 import trySelect from './trySelect';
 
-const toMonthDay = (date) => moment(date).format('MMM  DD');
+const toMonthDay = (date) => moment(date).format('ddd MM/DD');
 
 export default curry(({width, height}, svg, date) => {
   const tryText = trySelect(svg, 'text');
@@ -14,6 +14,6 @@ export default curry(({width, height}, svg, date) => {
     .text(toMonthDay(date))
     .attr(
       'transform',
-      `translate(${width} , ${height/2.05}) rotate(90)`
+      `translate(${width + 20} , ${height/2.05}) rotate(90)`
     );
 });

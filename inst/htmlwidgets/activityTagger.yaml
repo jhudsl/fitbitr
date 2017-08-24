@@ -9,3 +9,4 @@ dependencies:
     src: htmlwidgets/lib
     script:
       - fitbit_viz.js
+    stylesheet: fitbit_viz.css

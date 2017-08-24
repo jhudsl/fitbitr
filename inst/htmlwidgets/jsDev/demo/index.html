@@ -28,6 +28,10 @@
     overflow: visible;
   }
 
+  svg text {
+    font-family: 'avenir';
+  }
+
   body {
     font-family: avenir;
     margin: 15px;
@@ -53,15 +57,15 @@
     const fitbitPlot = tagViz({
       domTarget: '#viz',
       width: 1000,
-      tagMessage: (tags, colors) => console.log('new tags', tags, colors),
+      tagMessage: (tags) => console.log('new tags', tags),
     });
 
     fitbitPlot.newData(firstData,[])
 
     // window.setTimeout(
     //   function () {
-    //     // fitbitPlot.resize(500)
-    //     fitbitPlot.newData(data)
+    //     fitbitPlot.resize(500)
+    //     // fitbitPlot.newData(data)
 
     //   }, 3000
     // );

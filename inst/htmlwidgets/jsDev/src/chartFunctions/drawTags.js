@@ -31,7 +31,6 @@ export default (config, tags) => {
     .on('mouseenter', onMouseover)
     .on('mouseleave', onMouseout)
     .each(function(d) {
-      console.log('drawing new tag for ', d)
       d3
         .select(this)
         .append('rect')
@@ -64,7 +63,10 @@ export default (config, tags) => {
         (d) => `translate(${buttonRadius},${height + buttonRadius})`
       )
       .attr('opacity', 1e-6)
-      .on('click', onTagDelete);
+      .on('click', function(d) {
+        d3.select(this).remove(); // get rid of button
+        onTagDelete(d); // do other tag deletion logic
+      });
 
     const deleteCircle = deleteButton
       .append('circle')

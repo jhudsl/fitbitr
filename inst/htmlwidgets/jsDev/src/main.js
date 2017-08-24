@@ -26,6 +26,7 @@ const VisualizeDays = (config) => {
     yMax = 200,
     margins = {left: 40, right: 80, top: 60, bottom: 30},
     fontFamily = 'optima',
+    tagMessage,
   } = config;
 
   let {dayHeight = 200, width = d3.select(domTarget).style('width')} = config;
@@ -113,7 +114,10 @@ const VisualizeDays = (config) => {
     disableBrushes(''); // kill and brushes that may be open.
     const {data, tags, tagColors} = store.getState();
     if (resize) renderViz(data, [], tagColors);
+    // rerender viz with new tags or data
     renderViz(data, tags, tagColors);
+    // send tags to shiny 
+    tagMessage(tags);
   };
 
   const resize = (newWidth, newHeight = dayHeight) => {

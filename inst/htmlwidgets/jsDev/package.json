@@ -6,7 +6,8 @@
   "scripts": {
     "watch": "webpack -w",
     "start": "live-server --port=8000",
-    "test": "jest --watch"
+    "test": "jest --watch",
+    "packageIt": "cp demo/tagViz.js ../lib/fitbit_viz.js"
   },
   "author": "Nick Strayer <nick.strayer@gmail.com> (http://nickstrayer.me)",
   "license": "MIT",
