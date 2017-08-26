@@ -9,7 +9,7 @@ const barThickness = 20;
  *  a way of plotting tagged events when supplied with an array of tags. 
  */
 export default (config, tags) => {
-  const {svg, scales, height, onTagDelete, tagColors} = config;
+  const { svg, scales, height, onTagDelete, tagColors } = config;
 
   const secToPlot = (secs) => scales.x(secondsToTime(secs));
 
@@ -18,10 +18,13 @@ export default (config, tags) => {
     .data(tags, (t) => `${t.start.toString()}-${t.date}`);
 
   // Update bars
-  // tagBars
-  //   .attr('transform', `translate(0,0)`)
-  //   .attr('transform', (d) => `translate(${secToPlot(d.start)},0)`);
-
+  tagBars
+    .each(function (d) {
+      d3.select(this)
+        .select('rect')
+        .transition(trans('barEnter', 500))
+        .attr('width', (d) => secToPlot(d.end) - secToPlot(d.start));
+    });
   // Add new bars
   tagBars
     .enter()
@@ -30,7 +33,7 @@ export default (config, tags) => {
     .attr('transform', (d) => `translate(${secToPlot(d.start)},0)`)
     .on('mouseenter', onMouseover)
     .on('mouseleave', onMouseout)
-    .each(function(d) {
+    .each(function (d) {
       d3
         .select(this)
         .append('rect')
@@ -59,11 +62,11 @@ export default (config, tags) => {
       .append('g')
       .attr('class', 'delete_button')
       .attr(
-        'transform',
-        (d) => `translate(${buttonRadius},${height + buttonRadius})`
+      'transform',
+      (d) => `translate(${buttonRadius},${height + buttonRadius})`
       )
       .attr('opacity', 1e-6)
-      .on('click', function(d) {
+      .on('click', function (d) {
         d3.select(this).remove(); // get rid of button
         onTagDelete(d); // do other tag deletion logic
       });

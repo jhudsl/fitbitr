@@ -29,7 +29,7 @@ const VisualizeDays = (config) => {
     tagMessage,
   } = config;
 
-  console.log('hi');
+  console.log('heyo there');
 
   let {dayHeight = 200, width = d3.select(domTarget).style('width')} = config;
 
