@@ -16,7 +16,7 @@ parseQuery <- function(queryResult){
   }
 
   if(httr::status_code(queryResult) == 400){
-    stop("Your query is malformed. Try using makeQueryString() to ensure correct forms or see the fitbit api docs for reference (https://dev.fitbit.com/)")
+    stop("Your query is malformed. Try using makeQueryString() to ensure correct form or see the fitbit api docs for reference (https://dev.fitbit.com/)")
   }
 
   queryResult %>%

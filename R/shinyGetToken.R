@@ -14,9 +14,8 @@
 #'   token_url = api_keys$token_url)
 shinyGetToken <- function(auth_code, redirect_uri, key, token_url, key_secret_code){
 
-  queryBody <- sprintf("client_id=%s&grant_type=authorization_code&redirect_uri=%s&code=%s",
+  queryBody <- sprintf("client_id=%s&grant_type=authorization_code&redirect_uri=%s/&code=%s",
                        key, redirect_uri, auth_code)
-
   result <- httr::POST(
     encode = "form",
     url = token_url,

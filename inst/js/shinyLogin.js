@@ -49,6 +49,7 @@ function authr(c){
 
   if(page.has_code){
     buttonText(dom_target, "Logged In");
+    console.log('here the code', code);
     onCodeReceive(code);
     clearURLOptions(); //hide ugly url.
   } else {

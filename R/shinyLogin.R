@@ -26,12 +26,17 @@ shinyLoginUI <- function(id) {
 #' @param input you can ignore this as it is taken care of by shiny
 #' @param output you can ignore this as it is taken care of by shiny
 #' @param session you can ignore this as it is taken care of by shiny
-#' @param api_info A named list of the various api values you need to authenticate. "key", "id", "secret", "url", "token_url" 'https://www.fitbit.com/oauth2/authorize'
-#' @param api_key your apps personal api key.
+#' @param api_info A named list of the various api values you need to authenticate. 
+#'     'key': string of app ID, 
+#'     'secret': long string of secret, 
+#'     'auth_url': Where the app needs to go for authenticating: usually is 'https://www.fitbit.com/oauth2/authorize',
+#'     "redirect_uri": URL that the api will send back to after authentication: aka your app's url,
+#'     "token_url": URL for renewing a stale token. Usually 'https://api.fitbit.com/oauth2/token',
+#'     'scope': an array of desired data from api. See here https://dev.fitbit.com/build/reference/web-api/oauth2/#scope for options. 
 #' @param scope a vector of what you're requesting access to in the API. See the given api docs for examples.
 #' @export
 #' @examples
-#' authButton <- callModule(shinyauth, "fitbit_login", api_info = api_keys)
+#' authButton <- callModule(shinyLogin, "fitbit_login", api_info = api_keys)
 shinyLogin <- function(input, output, session,
                       api_info,
                       response_type = "code"){
