@@ -1,15 +1,26 @@
 # script interface with api
-#convert a string to base64
 library(fitbitr)
 library(tidyverse)
 
 
 # This will be expired by the time this is used so you'll need a new one
-token <- "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzSzYzRFgiLCJhdWQiOiIyMjg3UU0iLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJybG9jIHJ3ZWkgcmhyIHJhY3QgcnNsZSIsImV4cCI6MTUyMzU4NzE4NywiaWF0IjoxNTIzNTU4Mzg3fQ.KNE3pNYJVbTvvRydh9Vtnl4vOAnJeAkGvDB5rweVruM"
+token <- "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzSzYzRFgiLCJhdWQiOiIyMjg3UU0iLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJybG9jIHJ3ZWkgcmFjdCByaHIgcnNsZSIsImV4cCI6MTUyNDQ0OTgzNywiaWF0IjoxNTI0NDIxMDM3fQ.q6gsHieSeJ4OwMlckfhN3RGBIEGU7ZfpHqk6kRfJSiw"
 
 
+activities <- getActivitiesList(token = token)
 
-activities <- getActivitiesList("2018-01-01", token)
+my_activities <- activities$activities_list
+for(i in 1:5){
+  # get new batch
+  activities <- getActivitiesList(
+    premade_link = activities$next_link, 
+    token = token
+  )
+  
+  # append to dataframe
+  my_activities <- bind_rows(my_activities, activities$activities_list)
+}
+
 
 gatherHr <- function(heartRateLink, activityName, startTime, token){
   heartRateLink %>%
@@ -24,7 +35,9 @@ gatherHr <- function(heartRateLink, activityName, startTime, token){
     )
 }
 
-allHrs <- activities %>% 
+# follow heartrate links and download heartrate data
+allHrs <- my_activities %>% 
+  filter(activityName %in% c('Run', 'Treadmill')) %>% 
   filter(!is.na(heartRateLink)) %>% {
   purrr::pmap_df(
     list(.$heartRateLink, .$activityName, .$startTime),
@@ -33,6 +46,7 @@ allHrs <- activities %>%
   )
 }
 
+# plot!
 allHrs %>% 
   group_by(type, start) %>% 
   filter(type == 'Treadmill') %>% 
@@ -42,23 +56,19 @@ allHrs %>%
     timeSinceStart = (lubridate::hms(time) - lubridate::hms(startTime)) %>% as.numeric()
   ) %>% 
   ggplot(aes(x = timeSinceStart, y = value, id = startTime)) + 
-  geom_line(alpha = 0.3) +
-  geom_smooth(se = F, size = 0.5) +
+  geom_line(color ='#f03b20', size = 0.4, alpha = 0.6) +
+  geom_smooth(se = F, size = 0.7, color =  '#feb24c') +
   facet_wrap(~start) +
-  theme_minimal()
-
-leftFitbitOn <- activities$startTime[activities$duration == 49367000]
-allHrs %>% 
-  group_by(type, start) %>% 
-  filter(type == 'Weights' & start != leftFitbitOn) %>% 
-  mutate(startTime = dplyr::first(time)) %>%
-  ungroup() %>% 
-  mutate(
-    timeSinceStart = (lubridate::hms(time) - lubridate::hms(startTime)) %>% as.numeric()
-  ) %>% 
-  ggplot(aes(x = timeSinceStart, y = value, id = startTime)) + 
-  geom_line(alpha = 0.3) +
-  geom_smooth(se = F, size = 0.5) +
-  facet_wrap(~start) +
-  theme_minimal()
+  scale_y_continuous(expand = c(0, 0)) +
+  scale_x_continuous(expand = c(0.02, 0)) +
+  theme_void() +
+  theme(
+    strip.background = element_blank(),
+    strip.background = element_blank(),
+    strip.background = element_blank(),
+    strip.background = element_blank(),
+    strip.background = element_blank(),
+    strip.text = element_blank(),
+    panel.spacing = unit(0, 'lines')
+  )
 
