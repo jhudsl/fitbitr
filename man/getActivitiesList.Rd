@@ -4,7 +4,7 @@
 \alias{getActivitiesList}
 \title{Grabs both heartrate and steps for a given date at 1 minute intervals.}
 \usage{
-getActivitiesList(date = NULL, dateDirection = "before", limit = 100,
+getActivitiesList(date = NULL, dateDirection = "before", count = 100,
   premade_link = NULL, token)
 }
 \arguments{
@@ -12,7 +12,7 @@ getActivitiesList(date = NULL, dateDirection = "before", limit = 100,
 
 \item{dateDirection}{Do you want to look for activities 'before' the supplied date, or 'after'? E.g. Give me 100 activities before april 1.}
 
-\item{limit}{How many activities do you want to get? Max is 100.}
+\item{count}{How many activities do you want to get? Note that if value is greater than 100 multiple calls to the api will be completed and the amount of activities returned will be in increments of 100 due to how the fitbit api handles repeated requests.}
 
 \item{premade_link}{Do you already have a query link? Otherwise one will be generated for you using the above paramters. This is for when you have retrieved a query already and are using the supplied \code{$next_link} value to get more results.}
 

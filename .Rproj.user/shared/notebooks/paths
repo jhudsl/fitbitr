@@ -1,6 +1,7 @@
 /home/nick/fast_bind/packages/fitbitr/.gitignore="7A904816"
 /home/nick/fast_bind/packages/fitbitr/NAMESPACE="74D87109"
 /home/nick/fast_bind/packages/fitbitr/R/getActivitiesList.R="5C330FA9"
+/home/nick/fast_bind/packages/fitbitr/R/getActivityHeartRates.R="36008A01"
 /home/nick/fast_bind/packages/fitbitr/R/getDayProfile.R="E4064834"
 /home/nick/fast_bind/packages/fitbitr/R/getTimeSeries.R="391DA60A"
 /home/nick/fast_bind/packages/fitbitr/R/makeQueryString.R="815A7B6D"
