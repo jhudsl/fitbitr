@@ -5,7 +5,7 @@
 \title{Grabs both heartrate and steps for a given date at 1 minute intervals.}
 \usage{
 getActivitiesList(date = NULL, dateDirection = "before", count = 100,
-  premade_link = NULL, token)
+  premade_link = NULL, next_link = FALSE, token)
 }
 \arguments{
 \item{date}{Character string of date in yyyy-MM-dd format e.g. ("2017-07-31"). If no date is given defaults to the current date.}
@@ -16,19 +16,25 @@ getActivitiesList(date = NULL, dateDirection = "before", count = 100,
 
 \item{premade_link}{Do you already have a query link? Otherwise one will be generated for you using the above paramters. This is for when you have retrieved a query already and are using the supplied \code{$next_link} value to get more results.}
 
+\item{next_link}{Should the return be a list with a value \code{$next_link} supplied? Otherwise function just returns a dataframe with activities.}
+
 \item{token}{Valid OAuth token for the fitbit api. Make sure you have requested the activities scope!}
 }
 \value{
 A dataframe with columns "activeDuration": how many seconds the activity took,"activityName": fitbit name for whatever activity you did, "averageHeartRate": average heart rate during activity, "duration": how many seconds the activity lasted, "heartRateLink": link that can be used to query api for heart rate time series for this activity, "startTime": start date and time of activity; and however many rows the query returned.
 
-A list with a dataframe \code{$activities_list} which contains columns "activeDuration": how many seconds the activity took,"activityName": fitbit name for whatever activity you did, "averageHeartRate": average heart rate during activity, "duration": how many seconds the activity lasted, "heartRateLink": link that can be used to query api for heart rate time series for this activity, "startTime": start date and time of activity; and however many rows the query returned. In addition, the list contains \code{$next_link} which is a link to get the next batch of activities from the api if you desire more than the 100 most recent.
+If \code{next_link = TRUE}: A list with a dataframe \code{$activities_list} which contains columns "activeDuration": how many seconds the activity took,"activityName": fitbit name for whatever activity you did, "averageHeartRate": average heart rate during activity, "duration": how many seconds the activity lasted, "heartRateLink": link that can be used to query api for heart rate time series for this activity, "startTime": start date and time of activity; and however many rows the query returned. In addition, the list contains \code{$next_link} which is a link to get the next batch of activities from the api if you desire more than the 100 most recent. If \code{next_link = FALSE} (default) returns just the dataframe.
 }
 \description{
 Grabs both heartrate and steps for a given date at 1 minute intervals.
 }
 \examples{
-# Get the 100 activities leading up to april 1st 2018:
-activities <- getActivitiesList(date="2018-04-01", direction = 'before', token)
-# grab another batch of 100 results using supplied next link. 
-more_activities <- getActivitiesList(premade_link = activites$next_link)
+# Grab the 50 most recent activities from today. 
+recents <- getActivitiesList(count = 50, token)
+
+# Get the 200 activities leading up to april 1st 2018
+activities <- getActivitiesList(date="2018-04-01", direction = 'before', count = 200, token)
+
+# Get results and also return a link to download more. 
+more_activities <- getActivitiesList(next_link = TRUE)
 }

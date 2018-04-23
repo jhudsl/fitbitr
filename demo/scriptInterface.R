@@ -2,10 +2,22 @@
 library(fitbitr)
 library(tidyverse)
 
-# This will be expired by the time this is used so you'll need a new one
-token <- "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzSzYzRFgiLCJhdWQiOiIyMjg3UU0iLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJybG9jIHJ3ZWkgcmFjdCByaHIgcnNsZSIsImV4cCI6MTUyNDUyNTUyMCwiaWF0IjoxNTI0NDk2NzIwfQ.NV_Yok6wojG67XEhC8ZT8RxaeW7ULoVZa3vh7ofdP98"
+key = '_____'
+secret = '_______________________'
+redirect_uri = '__________________:6592'
 
-activities <- getActivitiesList(token = token, count = 100)
+# Get a token to use with the handy getTokenFromShiny function
+getTokenFromShiny(
+  key,
+  secret, 
+  redirect_uri,
+  app_port = 6592
+)
+
+# This will be expired by the time this is used so you'll need a new one
+token <- "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzSzYzRFgiLCJhdWQiOiIyMjg3UU0iLCJpc3MiOiJGaXRiaXQiLCJ0eXAiOiJhY2Nlc3NfdG9rZW4iLCJzY29wZXMiOiJybG9jIHJ3ZWkgcmhyIHJhY3QgcnNsZSIsImV4cCI6MTUyNDUyOTkyMiwiaWF0IjoxNTI0NTAxMTIyfQ.1Ert9lZzGPYRB0Ln8YkKQsXAmKRpB6y1GL9dTz5u8wQ"
+
+activities <- getActivitiesList(token = token, count = 30)
 
 heart_rates <- activities %>% 
   filter(
