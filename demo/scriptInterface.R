@@ -1,7 +1,9 @@
 # script interface with api
+devtools::install_github('jhudsl/fitbitr@activityData')
 library(fitbitr)
 library(tidyverse)
 
+# Go to https://dev.fitbit.com/apps to get this information for your registered app. 
 key = '_____'
 secret = '_______________________'
 redirect_uri = '__________________:6592'
